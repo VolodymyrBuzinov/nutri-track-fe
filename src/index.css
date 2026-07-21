@@ -90,6 +90,8 @@
 @theme inline {
   --font-sans: "Montserrat Variable", sans-serif;
   --font-heading: "Roboto Variable", sans-serif;
+  --text-10: 0.625rem;
+  --text-32: 2rem;
   --color-main: var(--main);
   --color-main-hover: var(--main-hover);
   --color-main-soft: var(--main-soft);
