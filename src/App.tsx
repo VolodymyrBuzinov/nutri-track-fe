@@ -1,7 +1,11 @@
-import { Button } from "./components/ui/button";
+import { Logo } from "@/components/logo"
 
 function App() {
-  return <Button>Click me</Button>;
+  return (
+    <main className="p-6">
+      <Logo className="h-16 w-auto" />
+    </main>
+  )
 }
 
-export default App;
+export default App

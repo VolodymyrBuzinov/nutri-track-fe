@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" role="img" aria-labelledby="title description">
+  <title id="title">Nutri Track</title>
+  <desc id="description">Nutri Track logo with a tracked leaf symbol</desc>
+  <g transform="translate(4 4)">
+    <rect width="56" height="56" rx="13" fill="#be185d" />
+    <path
+      d="M43 21a17 17 0 1 1-7-8.5"
+      fill="none"
+      stroke="#fff"
+      stroke-linecap="round"
+      stroke-width="3.5"
+    />
+    <path
+      d="M16 40c0-11 7-18 22-19 0 12-7 20-20 20 4-6 8-10 14-14-7 3-12 7-16 13Z"
+      fill="#fff"
+    />
+    <circle cx="42" cy="12" r="7" fill="#fff" />
+    <path
+      d="m39 12 2 2 4-4.2"
+      fill="none"
+      stroke="#be185d"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2.2"
+    />
+  </g>
+  <text
+    x="76"
+    y="42"
+    fill="#be185d"
+    font-family="Montserrat, Arial, sans-serif"
+    font-size="30"
+    font-weight="700"
+    letter-spacing="-0.8"
+  >
+    Nutri
+  </text>
+  <text
+    x="151"
+    y="42"
+    fill="#171717"
+    font-family="Montserrat, Arial, sans-serif"
+    font-size="30"
+    font-weight="700"
+    letter-spacing="-0.8"
+  >
+    Track
+  </text>
+</svg>
