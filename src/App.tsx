@@ -1,10 +1,19 @@
-import { Logo } from "@/components/logo";
+import { routesData } from "@/routing/routesData";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <main className="p-6">
-      <Logo className="h-16 w-auto" />
-    </main>
+    <BrowserRouter>
+      <Routes>
+        {routesData.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={route.element}
+          />
+        ))}
+      </Routes>
+    </BrowserRouter>
   );
 }
 

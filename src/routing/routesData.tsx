@@ -1,29 +1,44 @@
-import { LoginPage } from "@/pages/LoginPage";
+import { AdminProtectedRoute } from "@/routing/AdminProtectedRoute";
+import { UserProtectedRoute } from "@/routing/UserProtectedRoute";
+import { lazy, type ReactNode } from "react";
 import { routes } from "./routes";
 
-export const routesData = {
-  home: {
+// Route configuration intentionally keeps its lazy page declaration colocated.
+// eslint-disable-next-line react-refresh/only-export-components
+const LoginPage = lazy(() =>
+  import("../pages/LoginPage").then(({ LoginPage }) => ({
+    default: LoginPage,
+  }))
+);
+
+interface AppRoute {
+  path: string;
+  element: ReactNode;
+}
+
+export const routesData: AppRoute[] = [
+  {
     path: routes.home,
-    component: <></>,
+    element: <UserProtectedRoute>{null}</UserProtectedRoute>,
   },
-  login: {
+  {
     path: routes.login,
-    component: LoginPage,
+    element: <LoginPage />,
   },
-  profile: {
+  {
     path: routes.profile,
-    component: <></>,
+    element: <UserProtectedRoute>{null}</UserProtectedRoute>,
   },
-  admin_dashboard: {
+  {
     path: routes.admin_dashboard,
-    component: <></>,
+    element: <AdminProtectedRoute>{null}</AdminProtectedRoute>,
   },
-  admin_user: {
+  {
     path: routes.admin_user,
-    component: <></>,
+    element: <AdminProtectedRoute>{null}</AdminProtectedRoute>,
   },
-  admin_meal: {
+  {
     path: routes.admin_meal,
-    component: <></>,
+    element: <AdminProtectedRoute>{null}</AdminProtectedRoute>,
   },
-};
+];
