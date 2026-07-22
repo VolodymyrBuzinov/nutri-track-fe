@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-labelledby="title description">
+  <title id="title">Nutri Track loading</title>
+  <desc id="description">Animated Nutri Track logo</desc>
+  <style>
+    .loader-orbit {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: loader-spin 1.4s cubic-bezier(.45, 0, .55, 1) infinite;
+    }
+    .loader-mark {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: loader-breathe 1.4s ease-in-out infinite;
+    }
+    .loader-check {
+      stroke-dasharray: 14;
+      stroke-dashoffset: 14;
+      animation: loader-check 1.4s ease-in-out infinite;
+    }
+    @keyframes loader-spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes loader-breathe {
+      0%, 100% { transform: scale(.94); opacity: .9; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes loader-check {
+      0%, 25% { stroke-dashoffset: 14; }
+      55%, 85% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -14; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .loader-orbit, .loader-mark, .loader-check { animation: none; }
+      .loader-check { stroke-dashoffset: 0; }
+    }
+  </style>
+  <circle cx="60" cy="60" r="51" fill="#FCE7F3" opacity=".65" />
+  <g class="loader-orbit">
+    <circle cx="60" cy="60" r="49" fill="none" stroke="#BE185D" stroke-linecap="round" stroke-width="3" stroke-dasharray="78 230" />
+    <circle cx="60" cy="11" r="3.5" fill="#BE185D" />
+  </g>
+  <g class="loader-mark">
+    <rect x="27" y="27" width="66" height="66" rx="17" fill="#BE185D" />
+    <path d="M75 51a20 20 0 1 1-8.2-10" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="4" />
+    <path d="M45 74c0-13 8-21 25-22 0 14-8 23-23 23 4.5-7 9-11.5 16-16-8 3.5-14 8-18 15Z" fill="#fff" />
+    <circle cx="75" cy="41" r="8.5" fill="#fff" />
+    <path class="loader-check" d="m71.5 41 2.5 2.5 5-5.5" fill="none" stroke="#BE185D" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" />
+  </g>
+</svg>

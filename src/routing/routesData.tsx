@@ -1,3 +1,4 @@
+import { LoginPage } from "@/pages/LoginPage";
 import { routes } from "./routes";
 
 export const routesData = {
@@ -7,7 +8,7 @@ export const routesData = {
   },
   login: {
     path: routes.login,
-    component: <></>,
+    component: LoginPage,
   },
   profile: {
     path: routes.profile,

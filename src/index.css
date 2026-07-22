@@ -146,6 +146,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "roboto", sans-serif;
+    background-image: url("./assets//nutri-track-background.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
   }
   html {
     @apply font-sans;
