@@ -7,6 +7,7 @@ const REFRESH_ENDPOINTS = ["/v1/auth/refresh", "/v1/admin/auth/refresh"];
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
 });
 
 interface ApiCallParams<A> {
@@ -29,3 +30,13 @@ export function apiCall<R, A = unknown>({
     ...config,
   });
 }
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const code = error.response.data.code ?? "";
+    if (code === BAD_JWT) {
+    }
+    return Promise.reject(error);
+  }
+);
