@@ -1,6 +1,5 @@
+import type { Admin, AdminGetUsersParams, User } from "@/types";
 import { apiCall } from "../api";
-import type { User } from "../user/types";
-import type { Admin, AdminGetUsersRequest } from "./types";
 
 export const adminQeryKeys = {
   get_users: "admin-get-users",
@@ -17,7 +16,7 @@ export const adminApi = {
       url: ADMIN_API_PREFIX,
       method: "GET",
     }),
-  getUsers: (params: AdminGetUsersRequest) =>
+  getUsers: (params: AdminGetUsersParams) =>
     apiCall<User[]>({
       url: `${ADMIN_API_PREFIX}/users`,
       method: "GET",

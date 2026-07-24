@@ -173,3 +173,128 @@ export interface CreateUserRequest {
   email: string;
   password: string;
 }
+
+export interface GetUserParams {
+  /** User identifier. */
+  userId: string;
+}
+
+export interface UpdateUserParams {
+  /** User identifier. */
+  userId: string;
+}
+
+/** @format binary */
+export type UploadUserAvatarPayload = File;
+
+export interface UploadUserAvatarParams {
+  /** User identifier. */
+  userId: string;
+}
+
+export interface DeleteUserAvatarParams {
+  /** User identifier. */
+  userId: string;
+}
+
+export interface GetMealsParams {
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  search?: string;
+}
+
+export interface GetMealParams {
+  /** Meal identifier. */
+  id: string;
+}
+
+export interface GetMealPlanParams {
+  /**
+   * Calendar date in yyyy-MM-dd format.
+   * @format date
+   * @example "2026-07-17"
+   */
+  date?: string;
+  /** User identifier. */
+  userId: string;
+}
+
+export interface UpdateMealPlanParams {
+  /** Meal plan identifier. */
+  planId: string;
+}
+
+export interface ResetMealPlanParams {
+  /** Meal plan identifier. */
+  planId: string;
+}
+
+export interface GetDashboardParams {
+  /**
+   * Calendar date in yyyy-MM-dd format.
+   * @format date
+   * @example "2026-07-17"
+   */
+  date: string;
+  /** User identifier. */
+  userId: string;
+}
+
+export interface AdminGetUsersParams {
+  sortBy?: "name";
+  sortOrder?: "asc" | "desc";
+  /** @format email */
+  email?: string;
+}
+
+export interface AdminGetUserParams {
+  /** User identifier. */
+  userId: string;
+}
+
+export interface AdminDeleteUserParams {
+  /** User identifier. */
+  userId: string;
+}
+
+export interface AdminGetMealsParams {
+  sortBy?: "name" | "type";
+  sortOrder?: "asc" | "desc";
+  search?: string;
+}
+
+export interface AdminGetMealParams {
+  /** Meal identifier. */
+  mealId: string;
+}
+
+export interface AdminUpdateMealParams {
+  /** Meal identifier. */
+  mealId: string;
+}
+
+export interface AdminDeleteMealParams {
+  /** Meal identifier. */
+  mealId: string;
+}
+
+/** @format binary */
+export type AdminUploadMealImagePayload = File;
+
+export interface AdminUploadMealImageParams {
+  /** Meal slug. */
+  mealSlug: string;
+}
+
+/** @format binary */
+export type AdminUpdateMealImagePayload = File;
+
+export interface AdminUpdateMealImageParams {
+  /** Meal slug. */
+  mealSlug: string;
+}
+
+export interface AdminDeleteMealImageParams {
+  /** Meal slug. */
+  mealSlug: string;
+}

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "generate:api-types": "swagger-typescript-api generate --path \"$(dotenv -p OPENAPI_URL)\" --output ./src/types --name index.ts --no-client",
+    "generate:api-types": "swagger-typescript-api generate --path \"$(dotenv -p OPENAPI_URL)\" --output ./src/types --name index.ts --no-client --extract-request-params --extract-request-body",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
