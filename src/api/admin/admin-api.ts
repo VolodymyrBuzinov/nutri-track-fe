@@ -1,5 +1,5 @@
-import type { Admin, AdminGetUsersParams, User } from "@/types";
-import { apiCall } from "../api";
+import type { Admin, AdminGetUsersParams, LoginRequest, User } from "@/types";
+import { adminApiCall } from "../api";
 
 export const adminQeryKeys = {
   get_users: "admin-get-users",
@@ -12,12 +12,12 @@ const ADMIN_API_PREFIX = "/admin";
 
 export const adminApi = {
   getAdmin: () =>
-    apiCall<Admin>({
+    adminApiCall<Admin>({
       url: ADMIN_API_PREFIX,
       method: "GET",
     }),
   getUsers: (params: AdminGetUsersParams) =>
-    apiCall<User[]>({
+    adminApiCall<User[]>({
       url: `${ADMIN_API_PREFIX}/users`,
       method: "GET",
       config: {
@@ -27,21 +27,20 @@ export const adminApi = {
 };
 
 export const adminAuthApi = {
-  login: (email: string, password: string) =>
-    apiCall<Admin>({
-      url: `${ADMIN_API_PREFIX}/login`,
+  login: (data: LoginRequest) =>
+    adminApiCall<Admin>({
+      url: `${ADMIN_API_PREFIX}/auth/login`,
       method: "POST",
-      data: { email, password },
+      data,
     }),
   logout: () =>
-    apiCall<void>({
-      url: `${ADMIN_API_PREFIX}/logout`,
+    adminApiCall<void>({
+      url: `${ADMIN_API_PREFIX}/auth/logout`,
       method: "POST",
     }),
-  refresh: (refreshToken: string) =>
-    apiCall<Admin>({
-      url: `${ADMIN_API_PREFIX}/refresh-token`,
+  refresh: () =>
+    adminApiCall<void>({
+      url: `${ADMIN_API_PREFIX}/auth/refresh-token`,
       method: "POST",
-      data: { refreshToken },
     }),
 };
