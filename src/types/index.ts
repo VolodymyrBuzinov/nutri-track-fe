@@ -174,28 +174,8 @@ export interface CreateUserRequest {
   password: string;
 }
 
-export interface GetUserParams {
-  /** User identifier. */
-  userId: string;
-}
-
-export interface UpdateUserParams {
-  /** User identifier. */
-  userId: string;
-}
-
 /** @format binary */
 export type UploadUserAvatarPayload = File;
-
-export interface UploadUserAvatarParams {
-  /** User identifier. */
-  userId: string;
-}
-
-export interface DeleteUserAvatarParams {
-  /** User identifier. */
-  userId: string;
-}
 
 export interface GetMealsParams {
   sortBy?: string;
