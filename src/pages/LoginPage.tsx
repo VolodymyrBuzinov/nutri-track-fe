@@ -1,3 +1,9 @@
+import { AuthLayout } from "@/layouts/AuthLayout";
+
 export const LoginPage = () => {
-  return <div>LoginPage</div>;
+  return (
+    <AuthLayout>
+      <form></form>
+    </AuthLayout>
+  );
 };

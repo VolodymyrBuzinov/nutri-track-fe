@@ -1,10 +1,9 @@
+import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AdminProtectedRoute } from "@/routing/AdminProtectedRoute";
 import { UserProtectedRoute } from "@/routing/UserProtectedRoute";
 import { lazy, type ReactNode } from "react";
 import { routes } from "./routes";
 
-// Route configuration intentionally keeps its lazy page declaration colocated.
-// eslint-disable-next-line react-refresh/only-export-components
 const LoginPage = lazy(() =>
   import("../pages/LoginPage").then(({ LoginPage }) => ({
     default: LoginPage,
@@ -40,5 +39,9 @@ export const routesData: AppRoute[] = [
   {
     path: routes.admin_meal,
     element: <AdminProtectedRoute>{null}</AdminProtectedRoute>,
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ];
