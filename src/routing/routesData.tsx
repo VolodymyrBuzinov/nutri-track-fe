@@ -25,6 +25,10 @@ export const routesData: AppRoute[] = [
     element: <LoginPage />,
   },
   {
+    path: routes.admin_login,
+    element: <LoginPage isAdmin />,
+  },
+  {
     path: routes.profile,
     element: <UserProtectedRoute>{null}</UserProtectedRoute>,
   },

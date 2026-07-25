@@ -1,3 +1,5 @@
+import { adminAuthApi } from "@/api/admin/admin-api";
+import { userAuthApi } from "@/api/user/user-api";
 import { ErrorMessage } from "@/components/custom/ErrorMessage";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +11,9 @@ import {
 import { AuthLayout } from "@/layouts/AuthLayout";
 import type { LoginSchema } from "@/lib/validation";
 import { loginSchema } from "@/lib/validation";
+import { routes } from "@/routing/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import {
   ArrowRight,
   Eye,
@@ -20,11 +24,18 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const labelStyles = "text-sm font-medium mb-2 block";
 
-export const LoginPage = () => {
+interface LoginPageProps {
+  isAdmin?: boolean;
+}
+
+export const LoginPage = ({ isAdmin = false }: LoginPageProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -37,7 +48,27 @@ export const LoginPage = () => {
     },
   });
 
-  const onSubmit = () => undefined;
+  const { isPending: isAdminLoginPending, mutate: adminLogin } = useMutation({
+    mutationFn: adminAuthApi.login,
+    onSuccess: () => {
+      navigate(routes.admin_dashboard);
+    },
+  });
+
+  const { mutate: userLogin, isPending: isUserLoginPending } = useMutation({
+    mutationFn: userAuthApi.login,
+    onSuccess: () => {
+      navigate(routes.user_dashboard);
+    },
+  });
+
+  const onSubmit = (data: LoginSchema) => {
+    if (isAdmin) {
+      adminLogin(data);
+    } else {
+      userLogin(data);
+    }
+  };
 
   return (
     <AuthLayout>
@@ -107,13 +138,11 @@ export const LoginPage = () => {
           )}
         </div>
 
-        {/* <div className="mt-5 flex items-center justify-between gap-4 text-sm">
-          <button type="button" className="font-medium text-main">
-            Забули пароль?
-          </button>
-        </div> */}
-
-        <Button type="submit" className="mt-6 w-full">
+        <Button
+          type="submit"
+          className="mt-6 w-full"
+          disabled={isAdminLoginPending || isUserLoginPending}
+        >
           Увійти
           <ArrowRight aria-hidden="true" />
         </Button>
