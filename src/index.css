@@ -6,6 +6,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@utility break-word {
+  word-break: break-word;
+}
+
 :root {
   --main: #be185d;
   --main-hover: #9d174d;
@@ -153,10 +157,7 @@
     background-repeat: no-repeat;
   }
   #root {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-height: 100vh;
+    @apply flex min-h-screen flex-1 flex-col;
   }
   html {
     @apply font-sans;

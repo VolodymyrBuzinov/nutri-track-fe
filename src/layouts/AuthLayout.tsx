@@ -12,7 +12,7 @@ const titleStyles = "text-3xl font-bold mb-2 last:mb-0";
 
 export const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <section className="flex items-center px-4 py-6 flex-1">
+    <section className="flex items-center justify-center px-4 py-6 flex-1 gap-6 flex-wrap">
       <div className="relative pl-4">
         <img width={300} height={70} src={logo} alt="Nutri Track logo" />
 
@@ -24,7 +24,7 @@ export const AuthLayout = ({ children }: { children: ReactNode }) => {
             Щоденне харчування, прогрес і цілі — усе в одному місці.
           </p>
 
-          <ul className="mt-6 flex flex-wrap gap-3">
+          <ul className="mt-6 flex flex-wrap items-center justify-center gap-3">
             {highlights.map(({ icon: Icon, label }) => (
               <li
                 key={label}
@@ -37,7 +37,7 @@ export const AuthLayout = ({ children }: { children: ReactNode }) => {
           </ul>
         </div>
       </div>
-      <div className="self-stretch">{children}</div>
+      <div className="items-center">{children}</div>
     </section>
   );
 };
