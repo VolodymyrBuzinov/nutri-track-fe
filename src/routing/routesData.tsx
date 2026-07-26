@@ -3,6 +3,7 @@ import { AdminProtectedRoute } from "@/routing/AdminProtectedRoute";
 import { UserProtectedRoute } from "@/routing/UserProtectedRoute";
 import { lazy, type ReactNode } from "react";
 import { routes } from "./routes";
+import { AdminUsers } from "@/pages/admin/AdminUsers";
 
 const LoginPage = lazy(() =>
   import("../pages/LoginPage").then(({ LoginPage }) => ({
@@ -33,15 +34,15 @@ export const routesData: AppRoute[] = [
     element: <UserProtectedRoute>{null}</UserProtectedRoute>,
   },
   {
-    path: routes.admin_dashboard,
-    element: <AdminProtectedRoute>{null}</AdminProtectedRoute>,
+    path: routes.admin_users,
+    element: (
+      <AdminProtectedRoute>
+        <AdminUsers />
+      </AdminProtectedRoute>
+    ),
   },
   {
-    path: routes.admin_user,
-    element: <AdminProtectedRoute>{null}</AdminProtectedRoute>,
-  },
-  {
-    path: routes.admin_meal,
+    path: routes.admin_meals,
     element: <AdminProtectedRoute>{null}</AdminProtectedRoute>,
   },
   {

@@ -51,7 +51,7 @@ export const LoginPage = ({ isAdmin = false }: LoginPageProps) => {
   const { isPending: isAdminLoginPending, mutate: adminLogin } = useMutation({
     mutationFn: adminAuthApi.login,
     onSuccess: () => {
-      navigate(routes.admin_dashboard);
+      navigate(routes.admin_users);
     },
   });
 

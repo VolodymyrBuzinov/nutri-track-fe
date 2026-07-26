@@ -5,7 +5,6 @@ export const routes = {
   user_dashboard: "/dashboard",
   //admin
   admin_login: "/admin/login",
-  admin_dashboard: "/admin/dashboard",
-  admin_user: "/admin/users/:userId",
-  admin_meal: "/admin/meals/:mealId",
+  admin_users: "/admin/users",
+  admin_meals: "/admin/meals",
 };
