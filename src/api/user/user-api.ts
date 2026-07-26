@@ -10,7 +10,7 @@ const USER_API_PREFIX = "/users";
 export const userApi = {
   getUser: () => {
     return userApiCall<User>({
-      url: USER_API_PREFIX,
+      url: `${USER_API_PREFIX}/me`,
       method: "GET",
     });
   },

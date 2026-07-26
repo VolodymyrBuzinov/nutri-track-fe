@@ -31,10 +31,7 @@ interface ApiClientOptions {
   loginRoute: string;
 }
 
-const createApiClient = ({
-  refreshEndpoint,
-  loginRoute,
-}: ApiClientOptions) => {
+const createApiClient = ({ refreshEndpoint, loginRoute }: ApiClientOptions) => {
   const client = axios.create(API_CONFIG);
   let refreshRequest: Promise<void> | null = null;
 
@@ -106,3 +103,6 @@ export const adminHttpClient = createApiClient({
 
 export const userApiCall = createApiCall(userHttpClient);
 export const adminApiCall = createApiCall(adminHttpClient);
+export interface ApiResponse<T> {
+  data: T;
+}

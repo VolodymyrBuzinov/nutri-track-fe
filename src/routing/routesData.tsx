@@ -18,16 +18,16 @@ interface AppRoute {
 
 export const routesData: AppRoute[] = [
   {
-    path: routes.home,
-    element: <UserProtectedRoute>{null}</UserProtectedRoute>,
-  },
-  {
     path: routes.login,
     element: <LoginPage />,
   },
   {
     path: routes.admin_login,
-    element: <LoginPage isAdmin />,
+    element: (
+      <AdminProtectedRoute path={routes.admin_login} isPublic>
+        <LoginPage isAdmin />
+      </AdminProtectedRoute>
+    ),
   },
   {
     path: routes.profile,
@@ -36,14 +36,18 @@ export const routesData: AppRoute[] = [
   {
     path: routes.admin_users,
     element: (
-      <AdminProtectedRoute>
+      <AdminProtectedRoute path={routes.admin_users}>
         <AdminUsers />
       </AdminProtectedRoute>
     ),
   },
   {
     path: routes.admin_meals,
-    element: <AdminProtectedRoute>{null}</AdminProtectedRoute>,
+    element: (
+      <AdminProtectedRoute path={routes.admin_meals}>
+        {null}
+      </AdminProtectedRoute>
+    ),
   },
   {
     path: "*",
