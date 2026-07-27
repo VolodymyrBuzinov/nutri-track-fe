@@ -10,7 +10,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useCurrentAdmin } from "@/hooks/useCurrentAdmin";
 import { cn } from "@/lib/utils";
 import { routes } from "@/routing/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -21,6 +20,11 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
+const admin = {
+  name: "Admin",
+  icon: User,
+};
+
 const adminPages = [
   { name: "Users", path: routes.admin_users, icon: User },
   { name: "Meals", path: routes.admin_meals, icon: Utensils },
@@ -29,7 +33,6 @@ const adminPages = [
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
   const location = useLocation();
   const queryClient = useQueryClient();
-  const { data: admin } = useCurrentAdmin();
   const { mutate: logout, isPending: isLoggingOut } = useMutation({
     mutationFn: adminAuthApi.logout,
     onSuccess: () => {
