@@ -23,11 +23,7 @@ export const routesData: AppRoute[] = [
   },
   {
     path: routes.admin_login,
-    element: (
-      <AdminProtectedRoute path={routes.admin_login} isPublic>
-        <LoginPage isAdmin />
-      </AdminProtectedRoute>
-    ),
+    element: <LoginPage isAdmin />,
   },
   {
     path: routes.profile,
