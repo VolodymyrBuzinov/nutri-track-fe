@@ -5,21 +5,24 @@ import type { Admin, User } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext } from "react";
 
-export type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
+const isAdminRoute = location.pathname.split("/")[1] === "admin";
 
-interface AuthContextType {
-  currentUser: CurrentAccount | null;
-  isPending: boolean;
-  setCurrentUser: (user: CurrentAccount | null) => void;
-}
+const initialUserData: CurrentAccount = {
+  type: isAdminRoute ? "admin" : "user",
+  account: null,
+};
 
 const AuthContext = createContext<AuthContextType>({
-  currentUser: null,
+  currentUser: initialUserData,
   isPending: false,
   setCurrentUser: () => {},
 });
 
-const isAdminRoute = location.pathname.split("/")[1] === "admin";
+interface AuthContextType {
+  currentUser: CurrentAccount;
+  isPending: boolean;
+  setCurrentUser: (user: CurrentAccount | null) => void;
+}
 
 type CurrentAccount =
   | { type: "admin"; account: Admin | null }
@@ -60,10 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
-        currentUser: userData ?? {
-          type: isAdminRoute ? "admin" : "user",
-          account: null,
-        },
+        currentUser: userData ?? initialUserData,
         isPending,
         setCurrentUser,
       }}

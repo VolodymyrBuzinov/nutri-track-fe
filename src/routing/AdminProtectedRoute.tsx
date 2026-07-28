@@ -1,7 +1,7 @@
-import localLoader from "@/assets/local-loader.svg";
 import { Navigate } from "react-router-dom";
 import { routes } from "./routes";
 import { useAuth } from "@/context/authContext";
+import { Loader } from "@/components/custom/Loader";
 
 interface AdminProtectedRouteProps {
   children: React.ReactNode;
@@ -13,13 +13,7 @@ export const AdminProtectedRoute = ({
   path,
 }: AdminProtectedRouteProps) => {
   const { currentUser, isPending } = useAuth();
-  if (isPending) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <img src={localLoader} alt="Loading" className="size-12" />
-      </div>
-    );
-  }
+  if (isPending) return <Loader />;
 
   if (currentUser?.account === null && path !== routes.admin_login) {
     return <Navigate to={routes.admin_login} replace />;

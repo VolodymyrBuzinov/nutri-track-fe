@@ -76,7 +76,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
           </Popover>
         ))}
       </nav>
-      <div className="min-w-0 flex-1 pr-6">
+      <div className="min-w-0 flex-1 pr-6 flex flex-col">
         <header className="flex justify-end border-b border-border py-4">
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -105,7 +105,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <div>{children}</div>
+        <div className="flex flex-col flex-1">{children}</div>
       </div>
     </main>
   );
