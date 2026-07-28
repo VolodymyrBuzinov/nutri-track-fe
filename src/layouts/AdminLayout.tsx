@@ -1,4 +1,4 @@
-import { adminAuthApi, adminQueryKeys } from "@/api/admin/admin-api";
+import { adminAuthApi } from "@/api/admin/admin-api";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +11,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { queryClient } from "@/queryClient";
 import { routes } from "@/routing/routes";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { ChevronDown, LogOut, User, Utensils } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -32,13 +33,10 @@ const adminPages = [
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
   const location = useLocation();
-  const queryClient = useQueryClient();
   const { mutate: logout, isPending: isLoggingOut } = useMutation({
     mutationFn: adminAuthApi.logout,
     onSuccess: () => {
-      queryClient.setQueryData([adminQueryKeys.current_admin], {
-        data: { data: null },
-      });
+      queryClient.invalidateQueries();
     },
   });
 

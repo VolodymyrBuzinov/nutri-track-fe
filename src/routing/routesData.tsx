@@ -4,6 +4,7 @@ import { UserProtectedRoute } from "@/routing/UserProtectedRoute";
 import { lazy, type ReactNode } from "react";
 import { routes } from "./routes";
 import { AdminUsers } from "@/pages/admin/AdminUsers";
+import { AdminPublicRoute } from "./AdminPublicRoute";
 
 const LoginPage = lazy(() =>
   import("../pages/LoginPage").then(({ LoginPage }) => ({
@@ -23,7 +24,11 @@ export const routesData: AppRoute[] = [
   },
   {
     path: routes.admin_login,
-    element: <LoginPage isAdmin />,
+    element: (
+      <AdminPublicRoute>
+        <LoginPage isAdmin />
+      </AdminPublicRoute>
+    ),
   },
   {
     path: routes.profile,

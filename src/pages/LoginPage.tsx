@@ -8,10 +8,10 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useAuth } from "@/context/authContext";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import type { LoginSchema } from "@/lib/validation";
 import { loginSchema } from "@/lib/validation";
-import { routes } from "@/routing/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 
 const labelStyles = "text-sm font-medium mb-2 block";
 
@@ -34,7 +33,7 @@ interface LoginPageProps {
 
 export const LoginPage = ({ isAdmin = false }: LoginPageProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const navigate = useNavigate();
+  const { setCurrentUser } = useAuth();
 
   const {
     register,
@@ -50,15 +49,15 @@ export const LoginPage = ({ isAdmin = false }: LoginPageProps) => {
 
   const { isPending: isAdminLoginPending, mutate: adminLogin } = useMutation({
     mutationFn: adminAuthApi.login,
-    onSuccess: () => {
-      navigate(routes.admin_users);
+    onSuccess: (data) => {
+      setCurrentUser({ type: "admin", account: data.data.data });
     },
   });
 
   const { mutate: userLogin, isPending: isUserLoginPending } = useMutation({
     mutationFn: userAuthApi.login,
-    onSuccess: () => {
-      navigate(routes.user_dashboard);
+    onSuccess: (data) => {
+      setCurrentUser({ type: "user", account: data.data });
     },
   });
 

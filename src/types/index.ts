@@ -13,8 +13,15 @@
 export interface Error {
   error: {
     message: string;
-    code: string;
-    fields?: Record<string, string>;
+    code?: string;
+  };
+}
+
+export interface ValidationError {
+  error: {
+    message: string;
+    code: "VALIDATION_ERROR";
+    fields: Record<string, string>;
   };
 }
 

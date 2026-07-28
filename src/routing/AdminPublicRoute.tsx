@@ -1,17 +1,12 @@
-import localLoader from "@/assets/local-loader.svg";
-import { Navigate } from "react-router-dom";
-import { routes } from "./routes";
 import { useAuth } from "@/context/authContext";
+import localLoader from "@/assets/local-loader.svg";
+import { routes } from "./routes";
+import { Navigate } from "react-router-dom";
 
-interface AdminProtectedRouteProps {
+interface AdminPublicRouteProps {
   children: React.ReactNode;
-  path: string;
 }
-
-export const AdminProtectedRoute = ({
-  children,
-  path,
-}: AdminProtectedRouteProps) => {
+export const AdminPublicRoute = ({ children }: AdminPublicRouteProps) => {
   const { currentUser, isPending } = useAuth();
   if (isPending) {
     return (
@@ -20,9 +15,8 @@ export const AdminProtectedRoute = ({
       </div>
     );
   }
-
-  if (currentUser?.account === null && path !== routes.admin_login) {
-    return <Navigate to={routes.admin_login} replace />;
+  if (currentUser?.account) {
+    return <Navigate to={routes.admin_users} replace />;
   }
 
   return children;

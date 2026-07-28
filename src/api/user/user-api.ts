@@ -2,8 +2,8 @@ import type { LoginRequest, User } from "@/types";
 import { userApiCall } from "../api";
 
 export const userQueryKeys = {
-  getUser: ["user"],
-} as const;
+  getUser: "user",
+};
 
 const USER_API_PREFIX = "/users";
 
