@@ -25,7 +25,6 @@ import type { User } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { MoreVertical, Search, UserPlus } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "@/context/authContext";
 
 interface GetUsersTableHeadProps {
   onDeleteUser: (userId: string) => void;
@@ -105,7 +104,6 @@ export const AdminUsers = () => {
   const [deleteUserId, setDeleteUserId] = useState<string>();
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [searchEmail, setSearchEmail] = useState("");
-  const { currentUser } = useAuth();
   const debouncedSearchEmail = useDebounce(searchEmail.trim());
 
   const { data: users = [], isPending } = useQuery({
@@ -119,7 +117,6 @@ export const AdminUsers = () => {
 
       return response.data.data;
     },
-    enabled: !!currentUser?.account?.id,
   });
 
   const { mutate: deleteUser, isPending: isDeletingUser } = useMutation({

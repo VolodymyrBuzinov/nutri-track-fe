@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAuth } from "@/context/authContext";
 import { cn } from "@/lib/utils";
 import { queryClient } from "@/queryClient";
 import { routes } from "@/routing/routes";
@@ -33,10 +34,12 @@ const adminPages = [
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
   const location = useLocation();
+  const { setCurrentUser } = useAuth();
   const { mutate: logout, isPending: isLoggingOut } = useMutation({
     mutationFn: adminAuthApi.logout,
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ refetchType: "none" });
+      setCurrentUser(null);
     },
   });
 
