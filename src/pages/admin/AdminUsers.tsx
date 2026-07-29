@@ -25,6 +25,8 @@ import type { User } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { MoreVertical, Search, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { handleApiError } from "@/lib/utils";
+import { toast } from "@/components/ui/toast";
 
 interface GetUsersTableHeadProps {
   onDeleteUser: (userId: string) => void;
@@ -126,12 +128,27 @@ export const AdminUsers = () => {
         queryKey: [adminQueryKeys.get_users],
       });
       setDeleteUserId(undefined);
+      toast.add({
+        title: "Користувача успішно вилучено",
+        type: "success",
+      });
     },
+    onError: handleApiError,
   });
 
   return (
     <AdminLayout>
       <section className="py-6 flex flex-col flex-1">
+        <Button
+          onClick={() =>
+            toast.add({
+              title: "Користувача успішно вилучено",
+              type: "warning",
+            })
+          }
+        >
+          Success
+        </Button>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="font-heading text-3xl font-bold text-content">

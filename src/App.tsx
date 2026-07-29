@@ -1,12 +1,12 @@
 import { AppErrorBoundary } from "@/components/custom/shared/AppErrorBoundary";
 import { routesData } from "@/routing/routesData";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { ToastProvider } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toast";
 
 function App() {
   return (
     <AppErrorBoundary>
-      <ToastProvider />
+      <Toaster timeout={3000} />
       <BrowserRouter>
         <Routes>
           {routesData.map((route) => (

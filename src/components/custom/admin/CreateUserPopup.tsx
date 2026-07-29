@@ -15,6 +15,8 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { toast } from "@/components/ui/toast";
+import { handleApiError } from "@/lib/utils";
 import { createUserSchema, type CreateUserSchema } from "@/lib/validation";
 import { queryClient } from "@/queryClient";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,7 +61,12 @@ export const CreateUserPopup = ({
       });
       setIsPasswordVisible(false);
       onOpenChange(false);
+      toast.add({
+        title: "Користувача успішно створено",
+        type: "success",
+      });
     },
+    onError: handleApiError,
   });
 
   useEffect(() => {
