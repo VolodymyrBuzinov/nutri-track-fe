@@ -9,16 +9,23 @@ import { ConfirmationPopup } from "@/components/custom/shared/ConfirmationPopup"
 import { UserAvatar } from "@/components/custom/user/UserAvatar";
 import { Button } from "@/components/ui/button";
 import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { AdminLayout } from "@/layouts/AdminLayout";
+import { useDebounce } from "@/hooks/useDebounce";
 import { queryClient } from "@/queryClient";
 import type { User } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { MoreVertical, UserPlus } from "lucide-react";
+import { MoreVertical, Search, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/context/authContext";
 
 interface GetUsersTableHeadProps {
   onDeleteUser: (userId: string) => void;
@@ -97,23 +104,29 @@ export const AdminUsers = () => {
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [deleteUserId, setDeleteUserId] = useState<string>();
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
+  const [searchEmail, setSearchEmail] = useState("");
+  const { currentUser } = useAuth();
+  const debouncedSearchEmail = useDebounce(searchEmail.trim());
+
   const { data: users = [], isPending } = useQuery({
-    queryKey: [adminQueryKeys.get_users, sortDirection],
+    queryKey: [adminQueryKeys.get_users, sortDirection, debouncedSearchEmail],
     queryFn: async () => {
       const response = await adminApi.getUsers({
         sortBy: "name",
         sortOrder: sortDirection,
+        ...(debouncedSearchEmail ? { email: debouncedSearchEmail } : {}),
       });
 
       return response.data.data;
     },
+    enabled: !!currentUser?.account?.id,
   });
 
   const { mutate: deleteUser, isPending: isDeletingUser } = useMutation({
     mutationFn: adminApi.deleteUser,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [adminQueryKeys.get_users, sortDirection],
+        queryKey: [adminQueryKeys.get_users],
       });
       setDeleteUserId(undefined);
     },
@@ -130,6 +143,17 @@ export const AdminUsers = () => {
             <p className="mt-1 text-sm text-content-muted">
               Керуйте обліковими записами користувачів.
             </p>
+            <InputGroup className="mt-4 w-full max-w-md">
+              <InputGroupAddon>
+                <Search className="size-4" aria-hidden="true" />
+              </InputGroupAddon>
+              <InputGroupInput
+                type="search"
+                placeholder="Пошук за email"
+                value={searchEmail}
+                onChange={(event) => setSearchEmail(event.target.value)}
+              />
+            </InputGroup>
           </div>
           <Button
             className="w-full shrink-0 sm:w-auto"
