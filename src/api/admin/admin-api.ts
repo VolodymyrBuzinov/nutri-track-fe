@@ -2,6 +2,7 @@ import type {
   Admin,
   AdminGetMealsParams,
   AdminGetUsersParams,
+  CreateUserRequest,
   LoginRequest,
   Meal,
   User,
@@ -32,6 +33,18 @@ export const adminApi = {
         params,
       },
     }),
+  getUser: (userId: string) =>
+    adminApiCall<ApiResponse<User>>({
+      url: `${ADMIN_API_PREFIX}/users/${userId}`,
+      method: "GET",
+    }),
+  createUser: (data: CreateUserRequest) =>
+    adminApiCall<ApiResponse<User>>({
+      url: `${ADMIN_API_PREFIX}/users`,
+      method: "POST",
+      data,
+    }),
+
   getMeals: (params: AdminGetMealsParams) =>
     adminApiCall<ApiResponse<Meal[]>>({
       url: `${ADMIN_API_PREFIX}/meals`,
@@ -39,6 +52,11 @@ export const adminApi = {
       config: {
         params,
       },
+    }),
+  getMeal: (mealId: string) =>
+    adminApiCall<ApiResponse<Meal>>({
+      url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
+      method: "GET",
     }),
   deleteUser: (userId: string) =>
     adminApiCall<ApiResponse<void>>({

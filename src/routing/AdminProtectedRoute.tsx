@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { routes } from "./routes";
 import { useAuth } from "@/context/authContext";
-import { Loader } from "@/components/custom/Loader";
+import { Loader } from "@/components/custom/shared/Loader";
 
 interface AdminProtectedRouteProps {
   children: React.ReactNode;

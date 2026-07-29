@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader } from "@/components/custom/Loader";
+import { Loader } from "@/components/custom/shared/Loader";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp, Inbox } from "lucide-react";
 import type { ReactNode } from "react";

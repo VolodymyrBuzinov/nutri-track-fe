@@ -1,6 +1,6 @@
 import { adminAuthApi } from "@/api/admin/admin-api";
 import { userAuthApi } from "@/api/user/user-api";
-import { ErrorMessage } from "@/components/custom/ErrorMessage";
+import { ErrorMessage } from "@/components/custom/shared/ErrorMessage";
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,

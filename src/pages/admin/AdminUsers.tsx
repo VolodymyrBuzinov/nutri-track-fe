@@ -3,16 +3,11 @@ import {
   AdminTable,
   type AdminTableHead,
   type SortDirection,
-} from "@/components/custom/AdminTable";
-import { UserAvatar } from "@/components/custom/UserAvatar";
+} from "@/components/custom/admin/AdminTable";
+import { CreateUserPopup } from "@/components/custom/admin/CreateUserPopup";
+import { ConfirmationPopup } from "@/components/custom/shared/ConfirmationPopup";
+import { UserAvatar } from "@/components/custom/user/UserAvatar";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Popover,
   PopoverContent,
@@ -22,16 +17,14 @@ import { AdminLayout } from "@/layouts/AdminLayout";
 import { queryClient } from "@/queryClient";
 import type { User } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, UserPlus } from "lucide-react";
 import { useState } from "react";
 
 interface GetUsersTableHeadProps {
-  onEditUser: (user: User) => void;
   onDeleteUser: (userId: string) => void;
 }
 
 const getUsersTableHead = ({
-  onEditUser,
   onDeleteUser,
 }: GetUsersTableHeadProps): AdminTableHead<User>[] => {
   return [
@@ -86,13 +79,10 @@ const getUsersTableHead = ({
       name: "Дії",
       render: (user) => (
         <Popover>
-          <PopoverTrigger>
+          <PopoverTrigger className="cursor-pointer">
             <MoreVertical />
           </PopoverTrigger>
           <PopoverContent>
-            <Button variant="outline" onClick={() => onEditUser(user)}>
-              Редагувати
-            </Button>
             <Button variant="destructive" onClick={() => onDeleteUser(user.id)}>
               Вилучити
             </Button>
@@ -105,7 +95,8 @@ const getUsersTableHead = ({
 
 export const AdminUsers = () => {
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [selectedUser, setSelectedUser] = useState<User>();
+  const [deleteUserId, setDeleteUserId] = useState<string>();
+  const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const { data: users = [], isPending } = useQuery({
     queryKey: [adminQueryKeys.get_users, sortDirection],
     queryFn: async () => {
@@ -118,33 +109,42 @@ export const AdminUsers = () => {
     },
   });
 
-  const { mutate: deleteUser } = useMutation({
+  const { mutate: deleteUser, isPending: isDeletingUser } = useMutation({
     mutationFn: adminApi.deleteUser,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [adminQueryKeys.get_users, sortDirection],
       });
+      setDeleteUserId(undefined);
     },
   });
 
   return (
     <AdminLayout>
       <section className="py-6 flex flex-col flex-1">
-        <div className="mb-6">
-          <h1 className="font-heading text-3xl font-bold text-content">
-            Користувачі
-          </h1>
-          <p className="mt-1 text-sm text-content-muted">
-            Керуйте обліковими записами користувачів.
-          </p>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="font-heading text-3xl font-bold text-content">
+              Користувачі
+            </h1>
+            <p className="mt-1 text-sm text-content-muted">
+              Керуйте обліковими записами користувачів.
+            </p>
+          </div>
+          <Button
+            className="w-full shrink-0 sm:w-auto"
+            onClick={() => setIsCreateUserOpen(true)}
+          >
+            <UserPlus aria-hidden="true" />
+            Створити користувача
+          </Button>
         </div>
 
         <AdminTable
           data={users}
           getRowKey={(user) => user.id}
           head={getUsersTableHead({
-            onEditUser: (user) => setSelectedUser(user),
-            onDeleteUser: (userId) => deleteUser(userId),
+            onDeleteUser: (userId) => setDeleteUserId(userId),
           })}
           sort={{ key: "name", direction: sortDirection }}
           onSort={(_, direction) => setSortDirection(direction)}
@@ -152,21 +152,18 @@ export const AdminUsers = () => {
           isPending={isPending}
         />
       </section>
-      <Dialog
-        open={!!selectedUser}
-        onOpenChange={() => {
-          setSelectedUser(undefined);
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Редагувати користувача</DialogTitle>
-            <DialogDescription>
-              Редагуйте інформацію про користувача.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <CreateUserPopup
+        open={isCreateUserOpen}
+        onOpenChange={setIsCreateUserOpen}
+      />
+      <ConfirmationPopup
+        open={!!deleteUserId}
+        onOpenChange={() => setDeleteUserId(undefined)}
+        title="Вилучити користувача"
+        description="Ви впевнені, що хочете вилучити цього користувача?"
+        onConfirm={() => deleteUserId && deleteUser(deleteUserId)}
+        isLoading={isDeletingUser}
+      />
     </AdminLayout>
   );
 };
