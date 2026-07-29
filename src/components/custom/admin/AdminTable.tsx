@@ -110,23 +110,6 @@ export const AdminTable = <T,>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {showEmptyState ? (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={head.length}
-                  className="text-center text-content-muted"
-                >
-                  <div className="flex flex-col items-center justify-center gap-3">
-                    <Inbox
-                      className="size-10"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                    />
-                    <p className="text-sm">{emptyMessage}</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : null}
             {showData
               ? data.map((item) => (
                   <TableRow key={getRowKey(item)} className="h-16 bg-white">
@@ -147,6 +130,15 @@ export const AdminTable = <T,>({
           </TableBody>
         </Table>
       </ScrollArea>
+      {showEmptyState ? (
+        <div
+          className="absolute top-11 right-0 bottom-0 left-0 flex flex-col items-center justify-center gap-3 text-content-muted"
+          role="status"
+        >
+          <Inbox className="size-10" strokeWidth={1.5} aria-hidden="true" />
+          <p className="text-sm">{emptyMessage}</p>
+        </div>
+      ) : null}
       {isPending ? (
         <div className="absolute inset-0 z-10 bg-white/70 flex items-center justify-center">
           <Loader type="local" size={48} className="min-h-0" />

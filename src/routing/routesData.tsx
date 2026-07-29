@@ -5,6 +5,7 @@ import { lazy, type ReactNode } from "react";
 import { routes } from "./routes";
 import { AdminUsers } from "@/pages/admin/AdminUsers";
 import { AdminPublicRoute } from "./AdminPublicRoute";
+import { AdminMeals } from "@/pages/admin/AdminMeals";
 
 const LoginPage = lazy(() =>
   import("../pages/LoginPage").then(({ LoginPage }) => ({
@@ -46,7 +47,7 @@ export const routesData: AppRoute[] = [
     path: routes.admin_meals,
     element: (
       <AdminProtectedRoute path={routes.admin_meals}>
-        {null}
+        <AdminMeals />
       </AdminProtectedRoute>
     ),
   },

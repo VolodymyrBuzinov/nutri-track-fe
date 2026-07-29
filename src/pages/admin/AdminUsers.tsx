@@ -139,16 +139,6 @@ export const AdminUsers = () => {
   return (
     <AdminLayout>
       <section className="py-6 flex flex-col flex-1">
-        <Button
-          onClick={() =>
-            toast.add({
-              title: "Користувача успішно вилучено",
-              type: "warning",
-            })
-          }
-        >
-          Success
-        </Button>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="font-heading text-3xl font-bold text-content">
