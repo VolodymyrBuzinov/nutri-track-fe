@@ -40,6 +40,11 @@ export const adminApi = {
         params,
       },
     }),
+  deleteUser: (userId: string) =>
+    adminApiCall<ApiResponse<void>>({
+      url: `${ADMIN_API_PREFIX}/users/${userId}`,
+      method: "DELETE",
+    }),
 };
 
 export const adminAuthApi = {
