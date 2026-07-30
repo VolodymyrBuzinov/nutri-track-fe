@@ -129,6 +129,7 @@ export const AdminMeals = () => {
         title: "Страва успішно вилучена",
         type: "success",
       });
+      setDeleteMealId("");
     },
     onError: handleApiError,
   });

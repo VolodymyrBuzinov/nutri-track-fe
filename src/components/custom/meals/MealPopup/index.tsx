@@ -10,10 +10,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { noDoubleBlanksFilter, slugFilter } from "@/lib/utils";
 import { Image, Plus, Trash2, Upload } from "lucide-react";
 import type { Meal } from "@/types";
+import { Controller } from "react-hook-form";
 import { useMealPopup } from "./useMealPopup";
 
 const labelStyles = "mb-2 block text-sm font-medium";
@@ -34,6 +42,7 @@ interface MealPopupProps {
 export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
   const {
     appendProduct,
+    control,
     errors,
     fields,
     handleImageChange,
@@ -47,12 +56,13 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
     onSubmit,
     register,
     removeProduct,
+    ALLOWED_IMAGE_MIME_TYPES,
   } = useMealPopup({ open, onOpenChange, meal });
   const title = isEditing ? "Редагувати страву" : "Створити страву";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-x-hidden overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-x-hidden overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
@@ -86,16 +96,29 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
             </FormField>
 
             <FormField error={errors.type?.message} id="meal-type" label="Тип">
-              <select
-                id="meal-type"
-                className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm outline-none focus-visible:border-main focus-visible:ring-2 focus-visible:ring-main/20 aria-invalid:border-destructive"
-                aria-invalid={Boolean(errors.type)}
-                {...register("type")}
-              >
-                <option value="сніданок">Сніданок</option>
-                <option value="обід">Обід</option>
-                <option value="вечеря">Вечеря</option>
-              </select>
+              <Controller
+                control={control}
+                name="type"
+                render={({ field }) => (
+                  <Select
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      id="meal-type"
+                      aria-invalid={Boolean(errors.type)}
+                    >
+                      <SelectValue className="capitalize" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="сніданок">Сніданок</SelectItem>
+                      <SelectItem value="обід">Обід</SelectItem>
+                      <SelectItem value="вечеря">Вечеря</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </FormField>
           </div>
 
@@ -121,7 +144,7 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
               error={errors.image?.message}
               id="meal-image"
               label="Зображення"
-              info="Завантажте зображення у форматі JPG, PNG або WebP. Воно буде додано, оновлено чи вилучено лише після збереження страви."
+              info="Завантажте зображення у форматі JPG, PNG або WebP розміром до 5 МБ. Воно буде додано, оновлено чи вилучено лише після збереження страви."
             >
               <div>
                 {imagePreviewUrl ? (
@@ -139,11 +162,13 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   <Input
                     id="meal-image"
                     type="file"
-                    accept="image/*"
+                    accept={ALLOWED_IMAGE_MIME_TYPES.join(",")}
                     className="sr-only"
-                    onChange={(event) =>
-                      handleImageChange(event.target.files?.[0])
-                    }
+                    onChange={(event) => {
+                      if (!handleImageChange(event.target.files?.[0])) {
+                        event.target.value = "";
+                      }
+                    }}
                   />
                   <label
                     htmlFor="meal-image"

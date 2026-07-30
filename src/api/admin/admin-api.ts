@@ -62,7 +62,7 @@ export const adminApi = {
       url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
       method: "GET",
     }),
-  createMeal: (data: Omit<CreateMealRequest, "imageUrl">) =>
+  createMeal: (data: CreateMealRequest) =>
     adminApiCall<ApiResponse<Meal>>({
       url: `${ADMIN_API_PREFIX}/meals`,
       method: "POST",
@@ -76,13 +76,13 @@ export const adminApi = {
     }),
 
   uploadMealImage: (mealSlug: string, data: AdminUploadMealImagePayload) =>
-    adminApiCall<ApiResponse<Meal>>({
+    adminApiCall<ApiResponse<{ imageUrl: string }>>({
       url: `${ADMIN_API_PREFIX}/meals/${mealSlug}/image`,
       method: "POST",
       data,
     }),
   updateMealImage: (mealSlug: string, data: AdminUpdateMealImagePayload) =>
-    adminApiCall<ApiResponse<Meal>>({
+    adminApiCall<ApiResponse<{ imageUrl: string }>>({
       url: `${ADMIN_API_PREFIX}/meals/${mealSlug}/image`,
       method: "PATCH",
       data,
