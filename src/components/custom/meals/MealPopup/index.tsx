@@ -1,5 +1,5 @@
-import { adminApi, adminQueryKeys } from "@/api/admin/admin-api";
 import { ErrorMessage } from "@/components/custom/shared/ErrorMessage";
+import { InfoPopover } from "@/components/custom/shared/InfoPopover";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,20 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/toast";
-import { handleApiError } from "@/lib/utils";
-import {
-  mealSchema,
-  type MealFormInput,
-  type MealSchema,
-} from "@/lib/validation";
-import { queryClient } from "@/queryClient";
-import type { Meal, UpdateMealRequest } from "@/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { Image, Plus, Trash2 } from "lucide-react";
-import { useEffect } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { noDoubleBlanksFilter, slugFilter } from "@/lib/utils";
+import { Image, Plus, Trash2, Upload } from "lucide-react";
+import type { Meal } from "@/types";
+import { useMealPopup } from "./useMealPopup";
 
 const labelStyles = "mb-2 block text-sm font-medium";
 
@@ -35,23 +25,6 @@ const nutritionFields = [
   { name: "carbohydrates", label: "Вуглеводи", suffix: "г" },
 ] as const;
 
-const getDefaultValues = (meal?: Meal): MealFormInput => ({
-  name: meal?.name ?? "",
-  description: meal?.description ?? "",
-  imageUrl: meal?.imageUrl ?? "",
-  slug: meal?.slug ?? "",
-  type: meal?.type ?? "сніданок",
-  composition: {
-    calories: meal?.composition.calories ?? 0,
-    protein: meal?.composition.protein ?? 0,
-    fat: meal?.composition.fat ?? 0,
-    carbohydrates: meal?.composition.carbohydrates ?? 0,
-    products: meal?.composition.products ?? [
-      { name: "", count: 0, unit: "г" },
-    ],
-  },
-});
-
 interface MealPopupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -59,56 +32,27 @@ interface MealPopupProps {
 }
 
 export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
-  const isEditing = Boolean(meal);
   const {
-    register,
-    control,
+    appendProduct,
+    errors,
+    fields,
+    handleImageChange,
     handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<MealFormInput, undefined, MealSchema>({
-    resolver: zodResolver(mealSchema),
-    defaultValues: getDefaultValues(meal),
-  });
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "composition.products",
-  });
-
-  const { mutate: saveMeal, isPending } = useMutation({
-    mutationFn: (data: MealSchema) => {
-      if (!meal) return adminApi.createMeal(data);
-
-      const { slug: _, ...updateData } = data;
-      return adminApi.updateMeal(meal.id, updateData as UpdateMealRequest);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [adminQueryKeys.get_meals],
-      });
-      onOpenChange(false);
-      toast.add({
-        title: isEditing
-          ? "Страву успішно оновлено"
-          : "Страву успішно створено",
-        type: "success",
-      });
-    },
-    onError: handleApiError,
-  });
-
-  useEffect(() => {
-    if (!open) return;
-
-    reset(getDefaultValues(meal));
-  }, [meal, open, reset]);
-
-  const onSubmit = (data: MealSchema) => saveMeal(data);
+    imageFileName,
+    imagePreviewUrl,
+    isEditing,
+    isImageMarkedForDeletion,
+    isPending,
+    markImageForDeletion,
+    onSubmit,
+    register,
+    removeProduct,
+  } = useMealPopup({ open, onOpenChange, meal });
   const title = isEditing ? "Редагувати страву" : "Створити страву";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-x-hidden overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
@@ -116,8 +60,12 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        <form className="grid gap-5" noValidate onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <form
+          className="grid min-w-0 gap-5"
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className="grid min-w-0 gap-4 sm:grid-cols-2">
             <FormField
               error={errors.name?.message}
               id="meal-name"
@@ -125,9 +73,15 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
             >
               <Input
                 id="meal-name"
-                placeholder="Наприклад, Вівсянка з ягодами"
+                placeholder="Введіть назву страви"
                 aria-invalid={Boolean(errors.name)}
-                {...register("name")}
+                {...register("name", {
+                  onChange: (event) => {
+                    event.target.value = noDoubleBlanksFilter(
+                      event.target.value
+                    );
+                  },
+                })}
               />
             </FormField>
 
@@ -154,52 +108,99 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
               id="meal-description"
               placeholder="Коротко опишіть страву"
               aria-invalid={Boolean(errors.description)}
-              {...register("description")}
+              {...register("description", {
+                onChange: (event) => {
+                  event.target.value = noDoubleBlanksFilter(event.target.value);
+                },
+              })}
             />
           </FormField>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid min-w-0 gap-4 sm:grid-cols-2">
             <FormField
-              error={errors.imageUrl?.message}
-              id="meal-image-url"
-              label="Посилання на зображення"
+              error={errors.image?.message}
+              id="meal-image"
+              label="Зображення"
+              info="Завантажте зображення у форматі JPG, PNG або WebP. Воно буде додано, оновлено чи вилучено лише після збереження страви."
             >
-              <div className="relative">
-                <Input
-                  id="meal-image-url"
-                  type="url"
-                  placeholder="https://example.com/image.jpg"
-                  className="pr-10"
-                  aria-invalid={Boolean(errors.imageUrl)}
-                  {...register("imageUrl")}
-                />
-                <Image
-                  className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-content-muted"
-                  aria-hidden="true"
-                />
+              <div>
+                {imagePreviewUrl ? (
+                  <img
+                    src={imagePreviewUrl}
+                    alt={meal?.name ? `Зображення ${meal.name}` : ""}
+                    className="size-16 shrink-0 rounded-lg border border-border object-cover"
+                  />
+                ) : (
+                  <div className="flex size-16 shrink-0 items-center justify-center rounded-lg border border-dashed border-border text-content-muted">
+                    <Image className="size-5" aria-hidden="true" />
+                  </div>
+                )}
+                <div className="mt-3">
+                  <Input
+                    id="meal-image"
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(event) =>
+                      handleImageChange(event.target.files?.[0])
+                    }
+                  />
+                  <label
+                    htmlFor="meal-image"
+                    className="inline-flex h-10 max-w-full cursor-pointer items-center gap-2 rounded-md border border-main px-3 text-sm font-medium text-main transition-colors hover:bg-main-soft focus-within:ring-2 focus-within:ring-main/30"
+                  >
+                    <Upload className="size-4 shrink-0" aria-hidden="true" />
+                    <span className="truncate">
+                      {imageFileName ?? "Вибрати файл"}
+                    </span>
+                  </label>
+                </div>
+                {isEditing && imagePreviewUrl ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive"
+                    onClick={markImageForDeletion}
+                  >
+                    <Trash2 aria-hidden="true" />
+                    Вилучити
+                  </Button>
+                ) : null}
               </div>
+              {isImageMarkedForDeletion ? (
+                <p className="mt-2 text-xs text-content-muted">
+                  Зображення буде вилучено після збереження.
+                </p>
+              ) : null}
             </FormField>
 
             <FormField error={errors.slug?.message} id="meal-slug" label="Slug">
               <Input
                 id="meal-slug"
-                placeholder="vivianka-z-yagodami"
+                placeholder="nazva-stravi"
                 disabled={isEditing}
                 aria-invalid={Boolean(errors.slug)}
-                {...register("slug")}
+                {...register("slug", {
+                  onChange: (event) => {
+                    event.target.value = slugFilter(event.target.value);
+                  },
+                })}
               />
             </FormField>
           </div>
 
-          <fieldset className="grid gap-4 rounded-xl border border-border p-4">
-            <legend className="px-1 text-sm font-semibold">Поживна цінність</legend>
+          <fieldset className="grid min-w-0 gap-4 rounded-xl border border-border p-4">
+            <legend className="px-1 text-sm font-semibold">
+              Поживна цінність
+            </legend>
             <div className="grid grid-cols-2 gap-4">
               {nutritionFields.map(({ name, label, suffix }) => {
                 const error = errors.composition?.[name]?.message;
                 const inputId = `meal-${name}`;
 
                 return (
-                  <div key={name}>
+                  <div key={name} className="min-w-0">
                     <label className={labelStyles} htmlFor={inputId}>
                       {label}
                     </label>
@@ -226,36 +227,44 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
             </div>
           </fieldset>
 
-          <fieldset className="grid gap-3 rounded-xl border border-border p-4">
+          <fieldset className="grid min-w-0 gap-3 rounded-xl border border-border p-4">
             <div className="flex items-center justify-between gap-3">
               <legend className="text-sm font-semibold">Продукти</legend>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => append({ name: "", count: 0, unit: "г" })}
+                onClick={appendProduct}
               >
                 <Plus aria-hidden="true" />
                 Додати
               </Button>
             </div>
             {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-12 gap-2">
-                <div className="col-span-6">
+              <div key={field.id} className="grid min-w-0 grid-cols-12 gap-2">
+                <div className="col-span-6 min-w-0">
                   <Input
                     placeholder="Назва продукту"
                     aria-label={`Назва продукту ${index + 1}`}
                     aria-invalid={Boolean(
                       errors.composition?.products?.[index]?.name
                     )}
-                    {...register(`composition.products.${index}.name`)}
+                    {...register(`composition.products.${index}.name`, {
+                      onChange: (event) => {
+                        event.target.value = noDoubleBlanksFilter(
+                          event.target.value
+                        );
+                      },
+                    })}
                   />
                   <ErrorMessage
                     id={`meal-product-${index}-name-error`}
-                    message={errors.composition?.products?.[index]?.name?.message}
+                    message={
+                      errors.composition?.products?.[index]?.name?.message
+                    }
                   />
                 </div>
-                <div className="col-span-3">
+                <div className="col-span-3 min-w-0">
                   <Input
                     type="number"
                     min="0"
@@ -271,21 +280,31 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   />
                   <ErrorMessage
                     id={`meal-product-${index}-count-error`}
-                    message={errors.composition?.products?.[index]?.count?.message}
+                    message={
+                      errors.composition?.products?.[index]?.count?.message
+                    }
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-2 min-w-0">
                   <Input
                     placeholder="г"
                     aria-label={`Одиниця виміру продукту ${index + 1}`}
                     aria-invalid={Boolean(
                       errors.composition?.products?.[index]?.unit
                     )}
-                    {...register(`composition.products.${index}.unit`)}
+                    {...register(`composition.products.${index}.unit`, {
+                      onChange: (event) => {
+                        event.target.value = noDoubleBlanksFilter(
+                          event.target.value
+                        );
+                      },
+                    })}
                   />
                   <ErrorMessage
                     id={`meal-product-${index}-unit-error`}
-                    message={errors.composition?.products?.[index]?.unit?.message}
+                    message={
+                      errors.composition?.products?.[index]?.unit?.message
+                    }
                   />
                 </div>
                 <Button
@@ -295,7 +314,7 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   className="col-span-1"
                   aria-label={`Вилучити продукт ${index + 1}`}
                   disabled={fields.length === 1}
-                  onClick={() => remove(index)}
+                  onClick={() => removeProduct(index)}
                 >
                   <Trash2 aria-hidden="true" />
                 </Button>
@@ -322,8 +341,8 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   ? "Збереження..."
                   : "Створення..."
                 : isEditing
-                  ? "Зберегти"
-                  : "Створити"}
+                ? "Зберегти"
+                : "Створити"}
             </Button>
           </DialogFooter>
         </form>
@@ -336,14 +355,20 @@ interface FormFieldProps {
   children: React.ReactNode;
   error?: string;
   id: string;
+  info?: string;
   label: string;
 }
 
-const FormField = ({ children, error, id, label }: FormFieldProps) => (
-  <div>
-    <label className={labelStyles} htmlFor={id}>
-      {label}
-    </label>
+const FormField = ({ children, error, id, info, label }: FormFieldProps) => (
+  <div className="min-w-0">
+    <div className="mb-2 flex items-center gap-1.5">
+      <label className="text-sm font-medium" htmlFor={id}>
+        {label}
+      </label>
+      {info ? (
+        <InfoPopover content={info} label={`Інформація: ${label}`} />
+      ) : null}
+    </div>
     {children}
     <ErrorMessage id={`${id}-error`} message={error} />
   </div>

@@ -53,7 +53,7 @@ export const mealSchema = z.object({
     .trim()
     .min(1, "Опис страви є обов'язковим")
     .max(1_000, "Опис повинен містити щонайбільше 1000 символів"),
-  imageUrl: z.url("Вкажіть коректне посилання на зображення"),
+  image: z.instanceof(File, { message: "Виберіть файл зображення" }).optional(),
   slug: z
     .string()
     .trim()

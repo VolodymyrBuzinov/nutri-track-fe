@@ -2,6 +2,8 @@ import type {
   Admin,
   AdminGetMealsParams,
   AdminGetUsersParams,
+  AdminUpdateMealImagePayload,
+  AdminUploadMealImagePayload,
   CreateMealRequest,
   CreateUserRequest,
   LoginRequest,
@@ -60,7 +62,7 @@ export const adminApi = {
       url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
       method: "GET",
     }),
-  createMeal: (data: CreateMealRequest) =>
+  createMeal: (data: Omit<CreateMealRequest, "imageUrl">) =>
     adminApiCall<ApiResponse<Meal>>({
       url: `${ADMIN_API_PREFIX}/meals`,
       method: "POST",
@@ -71,6 +73,24 @@ export const adminApi = {
       url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
       method: "PATCH",
       data,
+    }),
+
+  uploadMealImage: (mealSlug: string, data: AdminUploadMealImagePayload) =>
+    adminApiCall<ApiResponse<Meal>>({
+      url: `${ADMIN_API_PREFIX}/meals/${mealSlug}/image`,
+      method: "POST",
+      data,
+    }),
+  updateMealImage: (mealSlug: string, data: AdminUpdateMealImagePayload) =>
+    adminApiCall<ApiResponse<Meal>>({
+      url: `${ADMIN_API_PREFIX}/meals/${mealSlug}/image`,
+      method: "PATCH",
+      data,
+    }),
+  deleteMealImage: (mealSlug: string) =>
+    adminApiCall<ApiResponse<void>>({
+      url: `${ADMIN_API_PREFIX}/meals/${mealSlug}/image`,
+      method: "DELETE",
     }),
   deleteMeal: (mealId: string) =>
     adminApiCall<ApiResponse<void>>({

@@ -4,8 +4,9 @@ import {
   type AdminTableHead,
   type SortDirection,
 } from "@/components/custom/admin/AdminTable";
-import { AdminMealIcon } from "@/components/custom/meal/AdminMealIcon";
+import { AdminMealIcon } from "@/components/custom/meals/AdminMealIcon";
 import { MealPopup } from "@/components/custom/meals/MealPopup";
+import { ConfirmationPopup } from "@/components/custom/shared/ConfirmationPopup";
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,
@@ -17,10 +18,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { toast } from "@/components/ui/toast";
 import { useDebounce } from "@/hooks/useDebounce";
 import { AdminLayout } from "@/layouts/AdminLayout";
+import { handleApiError } from "@/lib/utils";
+import { queryClient } from "@/queryClient";
 import type { Meal } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { MoreVertical, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
@@ -97,6 +101,7 @@ export const AdminMeals = () => {
   const [isMealPopupOpen, setIsMealPopupOpen] = useState(false);
   const [mealToEdit, setMealToEdit] = useState<Meal>();
   const debouncedSearch = useDebounce(search.trim());
+  const [deleteMealId, setDeleteMealId] = useState<string>("");
 
   const { data: meals = [], isPending } = useQuery({
     queryKey: [
@@ -114,15 +119,25 @@ export const AdminMeals = () => {
     select: (response) => response.data.data,
   });
 
+  const { mutate: deleteMealMutation } = useMutation({
+    mutationFn: (mealId: string) => adminApi.deleteMeal(mealId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [adminQueryKeys.get_meals],
+      });
+      toast.add({
+        title: "Страва успішно вилучена",
+        type: "success",
+      });
+    },
+    onError: handleApiError,
+  });
+
   const handleSort = (key: string, direction: SortDirection) => {
     if (key !== "name" && key !== "type") return;
 
     setSortBy(key);
     setSortDirection(direction);
-  };
-
-  const deleteMeal = (mealId: string) => {
-    console.log(mealId);
   };
 
   const editMeal = (mealId: string) => {
@@ -173,7 +188,10 @@ export const AdminMeals = () => {
         <AdminTable
           data={meals}
           getRowKey={(meal) => meal.id}
-          head={getMealsTableHead({ deleteMeal, editMeal })}
+          head={getMealsTableHead({
+            deleteMeal: (mealId) => setDeleteMealId(mealId),
+            editMeal,
+          })}
           sort={{ key: sortBy, direction: sortDirection }}
           onSort={handleSort}
           emptyMessage="Страв не знайдено"
@@ -183,6 +201,13 @@ export const AdminMeals = () => {
           open={isMealPopupOpen}
           onOpenChange={setIsMealPopupOpen}
           meal={mealToEdit}
+        />
+        <ConfirmationPopup
+          open={!!deleteMealId}
+          onOpenChange={() => setDeleteMealId("")}
+          onConfirm={() => deleteMealMutation(deleteMealId)}
+          title="Вилучити страву"
+          description="Ви впевнені, що хочете вилучити цю страву?"
         />
       </section>
     </AdminLayout>

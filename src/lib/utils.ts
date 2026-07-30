@@ -19,3 +19,13 @@ export const handleApiError = (error: ApiError) => {
     type: "error",
   });
 };
+
+export const noDoubleBlanksFilter = (v: string) => v.replace(/ {2,}/g, " ");
+
+export const onlyDigitsFilter = (v: string) => v.replace(/[^0-9]/g, "");
+
+export const slugFilter = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z]+/g, "-")
+    .replace(/^-+/, "");
