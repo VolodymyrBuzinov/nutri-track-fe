@@ -1,5 +1,4 @@
 import { adminApi, adminQueryKeys } from "@/api/admin/admin-api";
-import { ErrorMessage } from "@/components/custom/shared/ErrorMessage";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,6 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
@@ -22,10 +27,8 @@ import { queryClient } from "@/queryClient";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff, LockKeyhole, Mail, UserIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-
-const labelStyles = "text-sm font-medium mb-2 block";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 interface CreateUserPopupProps {
   open: boolean;
@@ -39,10 +42,9 @@ export const CreateUserPopup = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const {
-    register,
+    control,
     handleSubmit,
     reset,
-    formState: { errors },
   } = useForm<CreateUserSchema>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
@@ -69,19 +71,21 @@ export const CreateUserPopup = ({
     onError: handleApiError,
   });
 
-  useEffect(() => {
-    if (!open) {
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
       reset();
       setIsPasswordVisible(false);
     }
-  }, [open, reset]);
+
+    onOpenChange(nextOpen);
+  };
 
   const onSubmit = (data: CreateUserSchema) => {
     createUser(data);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Створити користувача</DialogTitle>
@@ -95,109 +99,109 @@ export const CreateUserPopup = ({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div>
-            <label className={labelStyles} htmlFor="create-user-name">
-              Ім'я
-            </label>
-            <InputGroup aria-invalid={Boolean(errors.name)}>
-              <InputGroupInput
-                id="create-user-name"
-                type="text"
-                placeholder="Введіть ім'я"
-                autoComplete="name"
-                aria-describedby={
-                  errors.name ? "create-user-name-error" : undefined
-                }
-                aria-invalid={Boolean(errors.name)}
-                {...register("name")}
-              />
-              <InputGroupAddon>
-                <UserIcon className="size-4" aria-hidden="true" />
-              </InputGroupAddon>
-            </InputGroup>
-            {errors.name && (
-              <ErrorMessage
-                id="create-user-name-error"
-                message={errors.name.message}
-              />
-            )}
-          </div>
+          <FieldGroup>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="create-user-name">Ім'я</FieldLabel>
+                  <InputGroup aria-invalid={fieldState.invalid}>
+                    <InputGroupInput
+                      {...field}
+                      id="create-user-name"
+                      type="text"
+                      placeholder="Введіть ім'я"
+                      autoComplete="name"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <InputGroupAddon>
+                      <UserIcon className="size-4" aria-hidden="true" />
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-          <div>
-            <label className={labelStyles} htmlFor="create-user-email">
-              Електронна пошта
-            </label>
-            <InputGroup aria-invalid={Boolean(errors.email)}>
-              <InputGroupInput
-                id="create-user-email"
-                type="email"
-                placeholder="Введіть електронну пошту"
-                autoComplete="email"
-                aria-describedby={
-                  errors.email ? "create-user-email-error" : undefined
-                }
-                aria-invalid={Boolean(errors.email)}
-                {...register("email")}
-              />
-              <InputGroupAddon>
-                <Mail className="size-4" aria-hidden="true" />
-              </InputGroupAddon>
-            </InputGroup>
-            {errors.email && (
-              <ErrorMessage
-                id="create-user-email-error"
-                message={errors.email.message}
-              />
-            )}
-          </div>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="create-user-email">
+                    Електронна пошта
+                  </FieldLabel>
+                  <InputGroup aria-invalid={fieldState.invalid}>
+                    <InputGroupInput
+                      {...field}
+                      id="create-user-email"
+                      type="email"
+                      placeholder="Введіть електронну пошту"
+                      autoComplete="email"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <InputGroupAddon>
+                      <Mail className="size-4" aria-hidden="true" />
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-          <div>
-            <label className={labelStyles} htmlFor="create-user-password">
-              Пароль
-            </label>
-            <InputGroup aria-invalid={Boolean(errors.password)}>
-              <InputGroupInput
-                id="create-user-password"
-                type={isPasswordVisible ? "text" : "password"}
-                placeholder="Введіть пароль"
-                autoComplete="new-password"
-                aria-describedby={
-                  errors.password ? "create-user-password-error" : undefined
-                }
-                aria-invalid={Boolean(errors.password)}
-                {...register("password")}
-              />
-              <InputGroupAddon>
-                <LockKeyhole className="size-4" aria-hidden="true" />
-              </InputGroupAddon>
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
-                  aria-label={
-                    isPasswordVisible ? "Приховати пароль" : "Показати пароль"
-                  }
-                  aria-pressed={isPasswordVisible}
-                  onClick={() =>
-                    setIsPasswordVisible((isVisible) => !isVisible)
-                  }
-                >
-                  {isPasswordVisible ? <EyeOff /> : <Eye />}
-                </InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
-            {errors.password && (
-              <ErrorMessage
-                id="create-user-password-error"
-                message={errors.password.message}
-              />
-            )}
-          </div>
+            <Controller
+              name="password"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="create-user-password">Пароль</FieldLabel>
+                  <InputGroup aria-invalid={fieldState.invalid}>
+                    <InputGroupInput
+                      {...field}
+                      id="create-user-password"
+                      type={isPasswordVisible ? "text" : "password"}
+                      placeholder="Введіть пароль"
+                      autoComplete="new-password"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <InputGroupAddon>
+                      <LockKeyhole className="size-4" aria-hidden="true" />
+                    </InputGroupAddon>
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        aria-label={
+                          isPasswordVisible
+                            ? "Приховати пароль"
+                            : "Показати пароль"
+                        }
+                        aria-pressed={isPasswordVisible}
+                        onClick={() =>
+                          setIsPasswordVisible((isVisible) => !isVisible)
+                        }
+                      >
+                        {isPasswordVisible ? <EyeOff /> : <Eye />}
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
 
           <DialogFooter className="pt-2">
             <Button
               type="button"
               variant="secondary"
               disabled={isPending}
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
             >
               Відміна
             </Button>
