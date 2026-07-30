@@ -2,9 +2,11 @@ import type {
   Admin,
   AdminGetMealsParams,
   AdminGetUsersParams,
+  CreateMealRequest,
   CreateUserRequest,
   LoginRequest,
   Meal,
+  UpdateMealRequest,
   User,
 } from "@/types";
 import { adminApiCall, type ApiResponse } from "../api";
@@ -57,6 +59,23 @@ export const adminApi = {
     adminApiCall<ApiResponse<Meal>>({
       url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
       method: "GET",
+    }),
+  createMeal: (data: CreateMealRequest) =>
+    adminApiCall<ApiResponse<Meal>>({
+      url: `${ADMIN_API_PREFIX}/meals`,
+      method: "POST",
+      data,
+    }),
+  updateMeal: (mealId: string, data: UpdateMealRequest) =>
+    adminApiCall<ApiResponse<Meal>>({
+      url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
+      method: "PATCH",
+      data,
+    }),
+  deleteMeal: (mealId: string) =>
+    adminApiCall<ApiResponse<void>>({
+      url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
+      method: "DELETE",
     }),
   deleteUser: (userId: string) =>
     adminApiCall<ApiResponse<void>>({

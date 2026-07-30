@@ -4,79 +4,114 @@ import {
   type AdminTableHead,
   type SortDirection,
 } from "@/components/custom/admin/AdminTable";
+import { AdminMealIcon } from "@/components/custom/meal/AdminMealIcon";
+import { MealPopup } from "@/components/custom/meals/MealPopup";
+import { Button } from "@/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useDebounce } from "@/hooks/useDebounce";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import type { Meal } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { MoreVertical, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
-const mealsTableHead: AdminTableHead<Meal>[] = [
-  {
-    key: "name",
-    name: "Страва",
-    isSortable: true,
-    render: (meal) => (
-      <div className="flex items-center gap-3 font-medium text-content">
-        <img
-          src={meal.imageUrl}
-          alt=""
-          className="size-10 rounded-md object-cover"
-        />
-        <span>{meal.name}</span>
-      </div>
-    ),
-  },
-  {
-    key: "type",
-    name: "Тип",
-    isSortable: true,
-    render: (meal) => meal.type,
-  },
-  {
-    key: "calories",
-    name: "Калорії",
-    render: (meal) => `${meal.composition.calories} ккал`,
-  },
-  {
-    key: "protein",
-    name: "Білки",
-    render: (meal) => `${meal.composition.protein} г`,
-  },
-  {
-    key: "fat",
-    name: "Жири",
-    render: (meal) => `${meal.composition.fat} г`,
-  },
-  {
-    key: "carbohydrates",
-    name: "Вуглеводи",
-    render: (meal) => `${meal.composition.carbohydrates} г`,
-  },
-];
+interface GetMealsTableHeadProps {
+  deleteMeal: (mealId: string) => void;
+  editMeal: (mealId: string) => void;
+}
+
+const getMealsTableHead = ({
+  deleteMeal,
+  editMeal,
+}: GetMealsTableHeadProps): AdminTableHead<Meal>[] => {
+  return [
+    {
+      key: "name",
+      name: "Страва",
+      isSortable: true,
+      render: (meal) => (
+        <AdminMealIcon iconUrl={meal.imageUrl} name={meal.name} />
+      ),
+    },
+    {
+      key: "type",
+      name: "Тип",
+      isSortable: true,
+      render: (meal) => meal.type,
+    },
+    {
+      key: "calories",
+      name: "Калорії",
+      render: (meal) => `${meal.composition.calories} ккал`,
+    },
+    {
+      key: "protein",
+      name: "Білки",
+      render: (meal) => `${meal.composition.protein} г`,
+    },
+    {
+      key: "fat",
+      name: "Жири",
+      render: (meal) => `${meal.composition.fat} г`,
+    },
+    {
+      key: "carbohydrates",
+      name: "Вуглеводи",
+      render: (meal) => `${meal.composition.carbohydrates} г`,
+    },
+    {
+      key: "actions",
+      name: "Дії",
+      render: (meal) => (
+        <Popover>
+          <PopoverTrigger className="cursor-pointer">
+            <MoreVertical />
+          </PopoverTrigger>
+          <PopoverContent>
+            <Button variant="outline" onClick={() => editMeal(meal.id)}>
+              Редагувати
+            </Button>
+            <Button variant="destructive" onClick={() => deleteMeal(meal.id)}>
+              Вилучити
+            </Button>
+          </PopoverContent>
+        </Popover>
+      ),
+    },
+  ];
+};
 
 export const AdminMeals = () => {
   const [sortBy, setSortBy] = useState<"name" | "type">("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [search, setSearch] = useState("");
+  const [isMealPopupOpen, setIsMealPopupOpen] = useState(false);
+  const [mealToEdit, setMealToEdit] = useState<Meal>();
   const debouncedSearch = useDebounce(search.trim());
 
   const { data: meals = [], isPending } = useQuery({
-    queryKey: [adminQueryKeys.get_meals, sortBy, sortDirection, debouncedSearch],
-    queryFn: async () => {
-      const response = await adminApi.getMeals({
+    queryKey: [
+      adminQueryKeys.get_meals,
+      sortBy,
+      sortDirection,
+      debouncedSearch,
+    ],
+    queryFn: () =>
+      adminApi.getMeals({
         sortBy,
         sortOrder: sortDirection,
         ...(debouncedSearch ? { search: debouncedSearch } : {}),
-      });
-
-      return response.data.data;
-    },
+      }),
+    select: (response) => response.data.data,
   });
 
   const handleSort = (key: string, direction: SortDirection) => {
@@ -86,37 +121,68 @@ export const AdminMeals = () => {
     setSortDirection(direction);
   };
 
+  const deleteMeal = (mealId: string) => {
+    console.log(mealId);
+  };
+
+  const editMeal = (mealId: string) => {
+    const meal = meals.find((item) => item.id === mealId);
+    if (!meal) return;
+
+    setMealToEdit(meal);
+    setIsMealPopupOpen(true);
+  };
+
+  const openCreateMealPopup = () => {
+    setMealToEdit(undefined);
+    setIsMealPopupOpen(true);
+  };
+
   return (
     <AdminLayout>
       <section className="py-6 flex flex-col flex-1">
-        <div className="mb-6">
-          <h1 className="font-heading text-3xl font-bold text-content">
-            Страви
-          </h1>
-          <p className="mt-1 text-sm text-content-muted">
-            Переглядайте та керуйте стравами.
-          </p>
-          <InputGroup className="mt-4 w-full max-w-md">
-            <InputGroupAddon>
-              <Search className="size-4" aria-hidden="true" />
-            </InputGroupAddon>
-            <InputGroupInput
-              type="search"
-              placeholder="Пошук за назвою"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </InputGroup>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="font-heading text-3xl font-bold text-content">
+              Страви
+            </h1>
+            <p className="mt-1 text-sm text-content-muted">
+              Переглядайте та керуйте стравами.
+            </p>
+            <InputGroup className="mt-4 w-full max-w-md">
+              <InputGroupAddon>
+                <Search className="size-4" aria-hidden="true" />
+              </InputGroupAddon>
+              <InputGroupInput
+                type="search"
+                placeholder="Пошук за назвою"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
+            </InputGroup>
+          </div>
+          <Button
+            className="w-full shrink-0 sm:w-auto"
+            onClick={openCreateMealPopup}
+          >
+            <Plus aria-hidden="true" />
+            Додати страву
+          </Button>
         </div>
 
         <AdminTable
           data={meals}
           getRowKey={(meal) => meal.id}
-          head={mealsTableHead}
+          head={getMealsTableHead({ deleteMeal, editMeal })}
           sort={{ key: sortBy, direction: sortDirection }}
           onSort={handleSort}
           emptyMessage="Страв не знайдено"
           isPending={isPending}
+        />
+        <MealPopup
+          open={isMealPopupOpen}
+          onOpenChange={setIsMealPopupOpen}
+          meal={mealToEdit}
         />
       </section>
     </AdminLayout>
