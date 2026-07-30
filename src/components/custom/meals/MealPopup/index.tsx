@@ -1,4 +1,3 @@
-import { ErrorMessage } from "@/components/custom/shared/ErrorMessage";
 import { InfoPopover } from "@/components/custom/shared/InfoPopover";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+  FieldTitle,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -23,8 +32,6 @@ import { Image, Plus, Trash2, Upload } from "lucide-react";
 import type { Meal } from "@/types";
 import { Controller } from "react-hook-form";
 import { useMealPopup } from "./useMealPopup";
-
-const labelStyles = "mb-2 block text-sm font-medium";
 
 const nutritionFields = [
   { name: "calories", label: "Калорії", suffix: "ккал" },
@@ -75,12 +82,9 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="grid min-w-0 gap-4 sm:grid-cols-2">
-            <FormField
-              error={errors.name?.message}
-              id="meal-name"
-              label="Назва"
-            >
+          <FieldGroup className="sm:grid-cols-2">
+            <Field data-invalid={Boolean(errors.name)}>
+              <FieldLabel htmlFor="meal-name">Назва</FieldLabel>
               <Input
                 id="meal-name"
                 placeholder="Введіть назву страви"
@@ -93,13 +97,15 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   },
                 })}
               />
-            </FormField>
+              {errors.name && <FieldError errors={[errors.name]} />}
+            </Field>
 
-            <FormField error={errors.type?.message} id="meal-type" label="Тип">
-              <Controller
-                control={control}
-                name="type"
-                render={({ field }) => (
+            <Controller
+              control={control}
+              name="type"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="meal-type">Тип</FieldLabel>
                   <Select
                     name={field.name}
                     value={field.value}
@@ -107,7 +113,7 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   >
                     <SelectTrigger
                       id="meal-type"
-                      aria-invalid={Boolean(errors.type)}
+                      aria-invalid={fieldState.invalid}
                     >
                       <SelectValue className="capitalize" />
                     </SelectTrigger>
@@ -117,16 +123,16 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                       <SelectItem value="вечеря">Вечеря</SelectItem>
                     </SelectContent>
                   </Select>
-                )}
-              />
-            </FormField>
-          </div>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
 
-          <FormField
-            error={errors.description?.message}
-            id="meal-description"
-            label="Опис"
-          >
+          <Field data-invalid={Boolean(errors.description)}>
+            <FieldLabel htmlFor="meal-description">Опис</FieldLabel>
             <Textarea
               id="meal-description"
               placeholder="Коротко опишіть страву"
@@ -137,15 +143,20 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                 },
               })}
             />
-          </FormField>
+            {errors.description && (
+              <FieldError errors={[errors.description]} />
+            )}
+          </Field>
 
-          <div className="grid min-w-0 gap-4 sm:grid-cols-2">
-            <FormField
-              error={errors.image?.message}
-              id="meal-image"
-              label="Зображення"
-              info="Завантажте зображення у форматі JPG, PNG або WebP розміром до 5 МБ. Воно буде додано, оновлено чи вилучено лише після збереження страви."
-            >
+          <FieldGroup className="sm:grid-cols-2">
+            <Field data-invalid={Boolean(errors.image)}>
+              <div className="flex items-center gap-1.5">
+                <FieldLabel htmlFor="meal-image">Зображення</FieldLabel>
+                <InfoPopover
+                  content="Завантажте зображення у форматі JPG, PNG або WebP розміром до 5 МБ. Воно буде додано, оновлено чи вилучено лише після збереження страви."
+                  label="Інформація: Зображення"
+                />
+              </div>
               <div>
                 {imagePreviewUrl ? (
                   <img
@@ -194,13 +205,15 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                 ) : null}
               </div>
               {isImageMarkedForDeletion ? (
-                <p className="mt-2 text-xs text-content-muted">
+                <FieldDescription>
                   Зображення буде вилучено після збереження.
-                </p>
+                </FieldDescription>
               ) : null}
-            </FormField>
+              {errors.image && <FieldError errors={[errors.image]} />}
+            </Field>
 
-            <FormField error={errors.slug?.message} id="meal-slug" label="Slug">
+            <Field data-invalid={Boolean(errors.slug)}>
+              <FieldLabel htmlFor="meal-slug">Slug</FieldLabel>
               <Input
                 id="meal-slug"
                 placeholder="nazva-stravi"
@@ -212,23 +225,20 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   },
                 })}
               />
-            </FormField>
-          </div>
+              {errors.slug && <FieldError errors={[errors.slug]} />}
+            </Field>
+          </FieldGroup>
 
-          <fieldset className="grid min-w-0 gap-4 rounded-xl border border-border p-4">
-            <legend className="px-1 text-sm font-semibold">
-              Поживна цінність
-            </legend>
+          <FieldSet className="rounded-xl border border-border p-4">
+            <FieldLegend>Поживна цінність</FieldLegend>
             <div className="grid grid-cols-2 gap-4">
               {nutritionFields.map(({ name, label, suffix }) => {
-                const error = errors.composition?.[name]?.message;
+                const fieldError = errors.composition?.[name];
                 const inputId = `meal-${name}`;
 
                 return (
-                  <div key={name} className="min-w-0">
-                    <label className={labelStyles} htmlFor={inputId}>
-                      {label}
-                    </label>
+                  <Field key={name} data-invalid={Boolean(fieldError)}>
+                    <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
                     <div className="relative">
                       <Input
                         id={inputId}
@@ -236,7 +246,7 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                         min="0"
                         step="any"
                         className="pr-10"
-                        aria-invalid={Boolean(error)}
+                        aria-invalid={Boolean(fieldError)}
                         {...register(`composition.${name}`, {
                           valueAsNumber: true,
                         })}
@@ -245,16 +255,21 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                         {suffix}
                       </span>
                     </div>
-                    <ErrorMessage id={`${inputId}-error`} message={error} />
-                  </div>
+                    {fieldError && <FieldError errors={[fieldError]} />}
+                  </Field>
                 );
               })}
             </div>
-          </fieldset>
+          </FieldSet>
 
-          <fieldset className="grid min-w-0 gap-3 rounded-xl border border-border p-4">
+          <FieldSet
+            aria-label="Продукти"
+            className="gap-3 rounded-xl border border-border p-4"
+          >
             <div className="flex items-center justify-between gap-3">
-              <legend className="text-sm font-semibold">Продукти</legend>
+              <FieldTitle className="text-sm font-semibold">
+                Продукти
+              </FieldTitle>
               <Button
                 type="button"
                 variant="outline"
@@ -267,7 +282,12 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
             </div>
             {fields.map((field, index) => (
               <div key={field.id} className="grid min-w-0 grid-cols-12 gap-2">
-                <div className="col-span-6 min-w-0">
+                <Field
+                  className="col-span-6"
+                  data-invalid={Boolean(
+                    errors.composition?.products?.[index]?.name
+                  )}
+                >
                   <Input
                     placeholder="Назва продукту"
                     aria-label={`Назва продукту ${index + 1}`}
@@ -282,14 +302,18 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                       },
                     })}
                   />
-                  <ErrorMessage
-                    id={`meal-product-${index}-name-error`}
-                    message={
-                      errors.composition?.products?.[index]?.name?.message
-                    }
-                  />
-                </div>
-                <div className="col-span-3 min-w-0">
+                  {errors.composition?.products?.[index]?.name && (
+                    <FieldError
+                      errors={[errors.composition.products[index].name]}
+                    />
+                  )}
+                </Field>
+                <Field
+                  className="col-span-3"
+                  data-invalid={Boolean(
+                    errors.composition?.products?.[index]?.count
+                  )}
+                >
                   <Input
                     type="number"
                     min="0"
@@ -303,14 +327,18 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                       valueAsNumber: true,
                     })}
                   />
-                  <ErrorMessage
-                    id={`meal-product-${index}-count-error`}
-                    message={
-                      errors.composition?.products?.[index]?.count?.message
-                    }
-                  />
-                </div>
-                <div className="col-span-2 min-w-0">
+                  {errors.composition?.products?.[index]?.count && (
+                    <FieldError
+                      errors={[errors.composition.products[index].count]}
+                    />
+                  )}
+                </Field>
+                <Field
+                  className="col-span-2"
+                  data-invalid={Boolean(
+                    errors.composition?.products?.[index]?.unit
+                  )}
+                >
                   <Input
                     placeholder="г"
                     aria-label={`Одиниця виміру продукту ${index + 1}`}
@@ -325,13 +353,12 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                       },
                     })}
                   />
-                  <ErrorMessage
-                    id={`meal-product-${index}-unit-error`}
-                    message={
-                      errors.composition?.products?.[index]?.unit?.message
-                    }
-                  />
-                </div>
+                  {errors.composition?.products?.[index]?.unit && (
+                    <FieldError
+                      errors={[errors.composition.products[index].unit]}
+                    />
+                  )}
+                </Field>
                 <Button
                   type="button"
                   variant="ghost"
@@ -345,11 +372,10 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                 </Button>
               </div>
             ))}
-            <ErrorMessage
-              id="meal-products-error"
-              message={errors.composition?.products?.message}
-            />
-          </fieldset>
+            {errors.composition?.products?.message && (
+              <FieldError errors={[errors.composition.products]} />
+            )}
+          </FieldSet>
 
           <DialogFooter>
             <Button
@@ -376,25 +402,3 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
   );
 };
 
-interface FormFieldProps {
-  children: React.ReactNode;
-  error?: string;
-  id: string;
-  info?: string;
-  label: string;
-}
-
-const FormField = ({ children, error, id, info, label }: FormFieldProps) => (
-  <div className="min-w-0">
-    <div className="mb-2 flex items-center gap-1.5">
-      <label className="text-sm font-medium" htmlFor={id}>
-        {label}
-      </label>
-      {info ? (
-        <InfoPopover content={info} label={`Інформація: ${label}`} />
-      ) : null}
-    </div>
-    {children}
-    <ErrorMessage id={`${id}-error`} message={error} />
-  </div>
-);
