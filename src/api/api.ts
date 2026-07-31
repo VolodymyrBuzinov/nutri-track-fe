@@ -39,7 +39,7 @@ const createApiClient = ({ refreshEndpoint, loginRoute }: ApiClientOptions) => {
     (response) => response,
     async (error: AxiosError<ApiError>) => {
       const originalRequest = error.config as RetryRequestConfig | undefined;
-      const code = error?.response?.data?.error?.code ?? "";
+      const code = error?.response?.data?.error?.code ?? TOKEN_ERROR_CODES[1];
 
       if (
         !TOKEN_ERROR_CODES.includes(code) ||
