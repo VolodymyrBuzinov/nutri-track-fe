@@ -12,9 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-
-const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
-const ALLOWED_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+import { ALLOWED_IMAGE_MIME_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/consts";
 
 const getDefaultValues = (meal?: Meal): MealFormInput => ({
   name: meal?.name ?? "",
@@ -85,6 +83,7 @@ export const useMealPopup = ({
   const { mutateAsync: uploadMealImage } = useMutation({
     mutationFn: ({ mealSlug, image }: MealImageMutationVariables) =>
       adminApi.uploadMealImage(mealSlug, image),
+    onError: handleApiError,
   });
   const { mutateAsync: updateMealImage } = useMutation({
     mutationFn: ({ mealSlug, image }: MealImageMutationVariables) =>

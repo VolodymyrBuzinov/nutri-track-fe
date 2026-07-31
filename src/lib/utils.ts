@@ -7,22 +7,28 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 type ApiError = {
-  data: {
-    message: string;
-    code: string;
+  response: {
+    data: {
+      error: {
+        message: string;
+        code: string;
+      };
+    };
   };
 };
+
 export const handleApiError = (error: ApiError) => {
+  const message = error?.response?.data.error?.message;
+
+  if (!message) return;
   toast.add({
     title: "Помилка",
-    description: error.data.message,
+    description: message,
     type: "error",
   });
 };
 
 export const noDoubleBlanksFilter = (v: string) => v.replace(/ {2,}/g, " ");
-
-export const onlyDigitsFilter = (v: string) => v.replace(/[^0-9]/g, "");
 
 export const slugFilter = (value: string) =>
   value

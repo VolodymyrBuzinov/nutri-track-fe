@@ -8,7 +8,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 
-const BAD_JWT = "bad_jwt";
+const TOKEN_ERROR_CODES = ["bad_jwt", "invalid_jwt"];
 
 const API_CONFIG = {
   baseURL: import.meta.env.VITE_API_URL,
@@ -39,10 +39,10 @@ const createApiClient = ({ refreshEndpoint, loginRoute }: ApiClientOptions) => {
     (response) => response,
     async (error: AxiosError<ApiError>) => {
       const originalRequest = error.config as RetryRequestConfig | undefined;
-      const code = error.response?.data?.error.code;
+      const code = error?.response?.data?.error?.code ?? "";
 
       if (
-        code !== BAD_JWT ||
+        !TOKEN_ERROR_CODES.includes(code) ||
         !originalRequest ||
         originalRequest._retry ||
         originalRequest.url === refreshEndpoint
