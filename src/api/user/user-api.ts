@@ -1,8 +1,14 @@
-import type { LoginRequest, User } from "@/types";
+import type {
+  Dashboard,
+  GetDashboardParams,
+  LoginRequest,
+  User,
+} from "@/types";
 import { userApiCall, type ApiResponse } from "../api";
 
 export const userQueryKeys = {
   getUser: "user",
+  getDashboardData: "dashboard",
 };
 
 const USER_API_PREFIX = "/users";
@@ -12,6 +18,15 @@ export const userApi = {
     return userApiCall<ApiResponse<User>>({
       url: `${USER_API_PREFIX}/me`,
       method: "GET",
+    });
+  },
+  getDashboardData: (params: GetDashboardParams) => {
+    return userApiCall<ApiResponse<Dashboard>>({
+      url: `${USER_API_PREFIX}/dashboard`,
+      method: "GET",
+      config: {
+        params,
+      },
     });
   },
 };

@@ -4,3 +4,5 @@ export const ALLOWED_IMAGE_MIME_TYPES = [
   "image/png",
   "image/webp",
 ];
+
+export const DATE_FORMAT = "yyyy-MM-dd";

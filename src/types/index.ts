@@ -20,7 +20,7 @@ export interface Error {
 export interface ValidationError {
   error: {
     message: string;
-    code: "VALIDATION_ERROR";
+    code: "validation_error";
     fields: Record<string, string>;
   };
 }
@@ -117,8 +117,6 @@ export interface UpdateMealRequest {
 }
 
 export interface MealPlanRequest {
-  /** @format uuid */
-  userId: string;
   /**
    * @format date
    * @example "2026-07-17"
@@ -151,7 +149,17 @@ export interface NutrientProgress {
 }
 
 export interface Dashboard {
-  progress: DashboardProgress | null;
+  /** Whether the user has supplied all profile values required for accurate nutrient targets. */
+  status: "ready" | "profile_incomplete";
+  /** Profile fields the user must complete before dashboard progress is available. */
+  missingProfileFields: (
+    | "age"
+    | "weight"
+    | "gender"
+    | "height"
+    | "activityLevel"
+  )[];
+  progress: DashboardProgress;
   recommendedMeals: Meal[];
 }
 
@@ -201,9 +209,7 @@ export interface GetMealPlanParams {
    * @format date
    * @example "2026-07-17"
    */
-  date?: string;
-  /** User identifier. */
-  userId: string;
+  date: string;
 }
 
 export interface UpdateMealPlanParams {
@@ -223,8 +229,6 @@ export interface GetDashboardParams {
    * @example "2026-07-17"
    */
   date: string;
-  /** User identifier. */
-  userId: string;
 }
 
 export interface AdminGetUsersParams {
