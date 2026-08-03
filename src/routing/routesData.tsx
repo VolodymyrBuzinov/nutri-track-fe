@@ -2,6 +2,7 @@ import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AdminProtectedRoute } from "@/routing/AdminProtectedRoute";
 import { UserProtectedRoute } from "@/routing/UserProtectedRoute";
 import { lazy, type ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 import { routes } from "./routes";
 import { AdminUsers } from "@/pages/admin/AdminUsers";
 import { AdminPublicRoute } from "./AdminPublicRoute";
@@ -19,6 +20,10 @@ interface AppRoute {
 }
 
 export const routesData: AppRoute[] = [
+  {
+    path: routes.home,
+    element: <Navigate to={routes.login} replace />,
+  },
   {
     path: routes.login,
     element: <LoginPage />,
