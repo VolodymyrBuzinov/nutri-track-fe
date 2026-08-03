@@ -1,16 +1,43 @@
-import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AdminProtectedRoute } from "@/routing/AdminProtectedRoute";
 import { UserProtectedRoute } from "@/routing/UserProtectedRoute";
 import { lazy, type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { routes } from "./routes";
-import { AdminUsers } from "@/pages/admin/AdminUsers";
 import { AdminPublicRoute } from "./AdminPublicRoute";
-import { AdminMeals } from "@/pages/admin/AdminMeals";
 
 const LoginPage = lazy(() =>
   import("../pages/LoginPage").then(({ LoginPage }) => ({
     default: LoginPage,
+  }))
+);
+
+const UserDashboard = lazy(() =>
+  import("../pages/user/UserDashboard").then(({ UserDashboard }) => ({
+    default: UserDashboard,
+  }))
+);
+
+const UserProfile = lazy(() =>
+  import("../pages/user/UserProfile").then(({ UserProfile }) => ({
+    default: UserProfile,
+  }))
+);
+
+const AdminUsers = lazy(() =>
+  import("../pages/admin/AdminUsers").then(({ AdminUsers }) => ({
+    default: AdminUsers,
+  }))
+);
+
+const AdminMeals = lazy(() =>
+  import("../pages/admin/AdminMeals").then(({ AdminMeals }) => ({
+    default: AdminMeals,
+  }))
+);
+
+const NotFoundPage = lazy(() =>
+  import("../pages/NotFoundPage").then(({ NotFoundPage }) => ({
+    default: NotFoundPage,
   }))
 );
 
@@ -37,8 +64,20 @@ export const routesData: AppRoute[] = [
     ),
   },
   {
-    path: routes.profile,
-    element: <UserProtectedRoute>{null}</UserProtectedRoute>,
+    path: routes.user_dashboard,
+    element: (
+      <UserProtectedRoute>
+        <UserDashboard />
+      </UserProtectedRoute>
+    ),
+  },
+  {
+    path: routes.user_profile,
+    element: (
+      <UserProtectedRoute>
+        <UserProfile />
+      </UserProtectedRoute>
+    ),
   },
   {
     path: routes.admin_users,
