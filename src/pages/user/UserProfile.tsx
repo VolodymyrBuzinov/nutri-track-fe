@@ -1,3 +1,5 @@
+import { UserLayout } from "@/layouts/UserLayout";
+
 export const UserProfile = () => {
-  return <div>Profile</div>;
+  return <UserLayout>Profile</UserLayout>;
 };

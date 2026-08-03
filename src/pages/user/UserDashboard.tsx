@@ -1,3 +1,5 @@
+import { UserLayout } from "@/layouts/UserLayout";
+
 export const UserDashboard = () => {
-  return <div>Dashboard</div>;
+  return <UserLayout>Dashboard</UserLayout>;
 };

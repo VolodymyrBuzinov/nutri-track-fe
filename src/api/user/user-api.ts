@@ -1,5 +1,5 @@
 import type { LoginRequest, User } from "@/types";
-import { userApiCall } from "../api";
+import { userApiCall, type ApiResponse } from "../api";
 
 export const userQueryKeys = {
   getUser: "user",
@@ -9,7 +9,7 @@ const USER_API_PREFIX = "/users";
 
 export const userApi = {
   getUser: () => {
-    return userApiCall<User>({
+    return userApiCall<ApiResponse<User>>({
       url: `${USER_API_PREFIX}/me`,
       method: "GET",
     });
@@ -18,7 +18,7 @@ export const userApi = {
 
 export const userAuthApi = {
   login: (data: LoginRequest) => {
-    return userApiCall<User>({
+    return userApiCall<ApiResponse<User>>({
       url: `${USER_API_PREFIX}/auth/login`,
       method: "POST",
       data,

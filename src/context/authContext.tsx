@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await userApi.getUser();
       return {
         type: "user",
-        account: response.data,
+        account: response.data.data,
       };
     },
     retry: false,

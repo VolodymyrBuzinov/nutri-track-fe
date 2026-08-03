@@ -4,6 +4,7 @@ import { lazy, type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { routes } from "./routes";
 import { AdminPublicRoute } from "./AdminPublicRoute";
+import { UserPublicRoute } from "./UserPublicRoute";
 
 const LoginPage = lazy(() =>
   import("../pages/LoginPage").then(({ LoginPage }) => ({
@@ -53,7 +54,11 @@ export const routesData: AppRoute[] = [
   },
   {
     path: routes.login,
-    element: <LoginPage />,
+    element: (
+      <UserPublicRoute>
+        <LoginPage />
+      </UserPublicRoute>
+    ),
   },
   {
     path: routes.admin_login,
@@ -66,7 +71,7 @@ export const routesData: AppRoute[] = [
   {
     path: routes.user_dashboard,
     element: (
-      <UserProtectedRoute>
+      <UserProtectedRoute path={routes.user_dashboard}>
         <UserDashboard />
       </UserProtectedRoute>
     ),
@@ -74,7 +79,7 @@ export const routesData: AppRoute[] = [
   {
     path: routes.user_profile,
     element: (
-      <UserProtectedRoute>
+      <UserProtectedRoute path={routes.user_profile}>
         <UserProfile />
       </UserProtectedRoute>
     ),
