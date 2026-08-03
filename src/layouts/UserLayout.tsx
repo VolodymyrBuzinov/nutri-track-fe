@@ -36,8 +36,6 @@ export const UserLayout = ({ children }: UserLayoutProps) => {
     },
   });
 
-  console.log(user.name, "user");
-
   return (
     <div className="flex min-h-svh flex-1 flex-col bg-surface">
       <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur">
@@ -50,9 +48,9 @@ export const UserLayout = ({ children }: UserLayoutProps) => {
             <img
               src="/src/assets/logo.svg"
               alt="Nutri Track"
-              width={210}
-              height={48}
-              className="h-12 w-auto block"
+              width={245}
+              height={56}
+              className="h-10 w-auto block md:h-14"
             />
           </Link>
 
@@ -71,7 +69,7 @@ export const UserLayout = ({ children }: UserLayoutProps) => {
                   )}
                 >
                   <page.icon className="size-4" aria-hidden="true" />
-                  <span className="hidden sm:inline">{page.name}</span>
+                  <span className="hidden md:inline">{page.name}</span>
                 </Link>
               );
             })}
@@ -87,13 +85,8 @@ export const UserLayout = ({ children }: UserLayoutProps) => {
                 />
               }
             >
-              <span className="hidden text-right text-sm sm:block">
-                <span className="block font-medium text-content">
-                  {user?.name ?? "Користувач"}
-                </span>
-                <span className="block text-xs text-content-muted">
-                  Мій профіль
-                </span>
+              <span className="block font-medium text-content hidden md:block">
+                {user?.name ?? "Користувач"}
               </span>
               <UserAvatar
                 avatarUrl={user?.avatarUrl}
