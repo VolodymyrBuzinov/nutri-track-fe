@@ -21,8 +21,10 @@ const AuthContext = createContext<AuthContextType>({
 interface AuthContextType {
   currentUser: CurrentAccount;
   isPending: boolean;
-  setCurrentUser: (user: CurrentAccount | null) => void;
+  setCurrentUser: (account: Account | null) => void;
 }
+
+type Account = Admin | User;
 
 type CurrentAccount =
   | { type: "admin"; account: Admin | null }
@@ -50,12 +52,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     retry: false,
   });
 
-  const setCurrentUser = (user: CurrentAccount | null) => {
+  const setCurrentUser = (account: Account | null) => {
     queryClient.setQueryData(
       [isAdminRoute ? adminQueryKeys.current_admin : userQueryKeys.getUser],
       {
         type: isAdminRoute ? "admin" : "user",
-        account: user,
+        account,
       }
     );
   };

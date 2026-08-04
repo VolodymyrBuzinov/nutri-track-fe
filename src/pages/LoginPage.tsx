@@ -50,14 +50,14 @@ export const LoginPage = ({ isAdmin = false }: LoginPageProps) => {
   const { isPending: isAdminLoginPending, mutate: adminLogin } = useMutation({
     mutationFn: adminAuthApi.login,
     onSuccess: (data) => {
-      setCurrentUser({ type: "admin", account: data?.data?.data });
+      setCurrentUser(data?.data?.data);
     },
   });
 
   const { mutate: userLogin, isPending: isUserLoginPending } = useMutation({
     mutationFn: userAuthApi.login,
     onSuccess: (data) => {
-      setCurrentUser({ type: "user", account: data?.data?.data });
+      setCurrentUser(data?.data?.data);
     },
   });
 
