@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/input-group";
 import { useAuth } from "@/context/authContext";
 import { AuthLayout } from "@/layouts/AuthLayout";
+import { handleApiError } from "@/lib/utils";
 import type { LoginSchema } from "@/lib/validation";
 import { loginSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,6 +53,7 @@ export const LoginPage = ({ isAdmin = false }: LoginPageProps) => {
     onSuccess: (data) => {
       setCurrentUser(data?.data?.data);
     },
+    onError: handleApiError,
   });
 
   const { mutate: userLogin, isPending: isUserLoginPending } = useMutation({
@@ -59,6 +61,7 @@ export const LoginPage = ({ isAdmin = false }: LoginPageProps) => {
     onSuccess: (data) => {
       setCurrentUser(data?.data?.data);
     },
+    onError: handleApiError,
   });
 
   const onSubmit = (data: LoginSchema) => {
