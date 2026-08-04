@@ -6,7 +6,7 @@ interface MealCardProps {
 
 export const MealCard = ({ meal }: MealCardProps) => {
   return (
-    <article className="overflow-hidden rounded-lg border border-border bg-white">
+    <article className="w-full max-w-xs overflow-hidden rounded-lg border border-border bg-white">
       <img
         src={meal.imageUrl}
         alt={meal.name}

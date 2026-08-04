@@ -1,5 +1,6 @@
 import { userApi, userQueryKeys } from "@/api/user/user-api";
 import { Loader } from "@/components/custom/shared/Loader";
+import { MealsSection } from "@/components/custom/meals/MealsSection";
 import { DailyNorms } from "@/components/custom/user/DailyNorms";
 import { MealPlan } from "@/components/custom/user/MealPlan";
 import { UserLayout } from "@/layouts/UserLayout";
@@ -24,6 +25,7 @@ export const UserDashboard = () => {
         <div className="space-y-6">
           <DailyNorms progress={dashboard?.progress} />
           <MealPlan />
+          <MealsSection />
         </div>
       )}
     </UserLayout>
