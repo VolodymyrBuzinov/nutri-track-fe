@@ -43,12 +43,15 @@ export const MealsSection = () => {
               </h3>
 
               {mealsByType.length ? (
-                <Carousel opts={{ align: "start" }} className="mt-3">
+                <Carousel
+                  opts={{ align: "start", containScroll: "trimSnaps" }}
+                  className="mt-3"
+                >
                   <CarouselContent>
                     {mealsByType.map((meal) => (
                       <CarouselItem
                         key={meal.id}
-                        className="basis-full sm:basis-1/2 lg:basis-1/3"
+                        className="flex justify-center basis-80"
                       >
                         <MealCard meal={meal} />
                       </CarouselItem>
