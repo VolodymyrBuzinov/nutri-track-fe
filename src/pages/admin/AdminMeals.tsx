@@ -29,13 +29,8 @@ import { MoreVertical, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
 interface GetMealsTableHeadProps {
-  deleteMeal: (mealId: string, mealSlug: string) => void;
-  editMeal: (mealId: string) => void;
-}
-
-interface DeleteMealData {
-  slug: string;
-  id: string;
+  deleteMeal: (mealSlug: string) => void;
+  editMeal: (mealSlug: string) => void;
 }
 
 const getMealsTableHead = ({
@@ -86,13 +81,10 @@ const getMealsTableHead = ({
             <MoreVertical />
           </PopoverTrigger>
           <PopoverContent>
-            <Button variant="outline" onClick={() => editMeal(meal.id)}>
+            <Button variant="outline" onClick={() => editMeal(meal.slug)}>
               Редагувати
             </Button>
-            <Button
-              variant="destructive"
-              onClick={() => deleteMeal(meal.id, meal.slug)}
-            >
+            <Button variant="destructive" onClick={() => deleteMeal(meal.slug)}>
               Вилучити
             </Button>
           </PopoverContent>
@@ -109,7 +101,7 @@ export const AdminMeals = () => {
   const [isMealPopupOpen, setIsMealPopupOpen] = useState(false);
   const [mealToEdit, setMealToEdit] = useState<Meal>();
   const debouncedSearch = useDebounce(search.trim());
-  const [deleteMealData, setDeleteMealData] = useState<DeleteMealData>();
+  const [deleteMealSlug, setDeleteMealSlug] = useState("");
 
   const { data: meals = [], isPending } = useQuery({
     queryKey: [
@@ -132,7 +124,7 @@ export const AdminMeals = () => {
   });
 
   const { mutateAsync: deleteMealMutation } = useMutation({
-    mutationFn: (mealId: string) => adminApi.deleteMeal(mealId),
+    mutationFn: adminApi.deleteMeal,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [adminQueryKeys.get_meals],
@@ -141,7 +133,7 @@ export const AdminMeals = () => {
         title: "Страва успішно вилучена",
         type: "success",
       });
-      setDeleteMealData(undefined);
+      setDeleteMealSlug("");
     },
     onError: handleApiError,
   });
@@ -153,18 +145,15 @@ export const AdminMeals = () => {
     setSortDirection(direction);
   };
 
-  const deleteMeal = async (
-    mealId: string | undefined,
-    mealSlug: string | undefined
-  ) => {
-    if (!mealId || !mealSlug) return;
+  const deleteMeal = async (mealSlug: string | undefined) => {
+    if (!mealSlug) return;
 
     await deleteMealImageMutation(mealSlug);
-    await deleteMealMutation(mealId);
+    await deleteMealMutation(mealSlug);
   };
 
-  const editMeal = (mealId: string) => {
-    const meal = meals.find((item) => item.id === mealId);
+  const editMeal = (mealSlug: string) => {
+    const meal = meals.find((item) => item.slug === mealSlug);
     if (!meal) return;
 
     setMealToEdit(meal);
@@ -212,11 +201,7 @@ export const AdminMeals = () => {
           data={meals}
           getRowKey={(meal) => meal.id}
           head={getMealsTableHead({
-            deleteMeal: (mealId, mealSlug) =>
-              setDeleteMealData({
-                id: mealId,
-                slug: mealSlug,
-              }),
+            deleteMeal: (mealSlug) => setDeleteMealSlug(mealSlug),
             editMeal,
           })}
           sort={{ key: sortBy, direction: sortDirection }}
@@ -230,9 +215,9 @@ export const AdminMeals = () => {
           meal={mealToEdit}
         />
         <ConfirmationPopup
-          open={!!deleteMealData}
-          onOpenChange={() => setDeleteMealData(undefined)}
-          onConfirm={() => deleteMeal(deleteMealData?.id, deleteMealData?.slug)}
+          open={!!deleteMealSlug}
+          onOpenChange={() => setDeleteMealSlug("")}
+          onConfirm={() => deleteMeal(deleteMealSlug)}
           title="Вилучити страву"
           description="Ви впевнені, що хочете вилучити цю страву?"
         />

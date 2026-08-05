@@ -57,9 +57,9 @@ export const adminApi = {
         params,
       },
     }),
-  getMeal: (mealId: string) =>
+  getMeal: (mealSlug: string) =>
     adminApiCall<ApiResponse<Meal>>({
-      url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
+      url: `${ADMIN_API_PREFIX}/meals/${mealSlug}`,
       method: "GET",
     }),
   createMeal: (data: CreateMealRequest) =>
@@ -68,9 +68,9 @@ export const adminApi = {
       method: "POST",
       data,
     }),
-  updateMeal: (mealId: string, data: UpdateMealRequest) =>
+  updateMeal: (mealSlug: string, data: UpdateMealRequest) =>
     adminApiCall<ApiResponse<Meal>>({
-      url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
+      url: `${ADMIN_API_PREFIX}/meals/${mealSlug}`,
       method: "PATCH",
       data,
     }),
@@ -92,9 +92,9 @@ export const adminApi = {
       url: `${ADMIN_API_PREFIX}/meals/${mealSlug}/image`,
       method: "DELETE",
     }),
-  deleteMeal: (mealId: string) =>
+  deleteMeal: (mealSlug: string) =>
     adminApiCall<ApiResponse<void>>({
-      url: `${ADMIN_API_PREFIX}/meals/${mealId}`,
+      url: `${ADMIN_API_PREFIX}/meals/${mealSlug}`,
       method: "DELETE",
     }),
   deleteUser: (userId: string) =>

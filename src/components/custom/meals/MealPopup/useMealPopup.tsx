@@ -42,7 +42,7 @@ interface MealImageMutationVariables {
 
 interface UpdateMealMutationVariables {
   data: UpdateMealRequest;
-  mealId: string;
+  mealSlug: string;
 }
 
 export const useMealPopup = ({
@@ -75,10 +75,12 @@ export const useMealPopup = ({
 
   const { mutateAsync: createMeal } = useMutation({
     mutationFn: adminApi.createMeal,
+    onError: handleApiError,
   });
   const { mutateAsync: updateMeal } = useMutation({
-    mutationFn: ({ mealId, data }: UpdateMealMutationVariables) =>
-      adminApi.updateMeal(mealId, data),
+    mutationFn: ({ mealSlug, data }: UpdateMealMutationVariables) =>
+      adminApi.updateMeal(mealSlug, data),
+    onError: handleApiError,
   });
   const { mutateAsync: uploadMealImage } = useMutation({
     mutationFn: ({ mealSlug, image }: MealImageMutationVariables) =>
@@ -88,9 +90,11 @@ export const useMealPopup = ({
   const { mutateAsync: updateMealImage } = useMutation({
     mutationFn: ({ mealSlug, image }: MealImageMutationVariables) =>
       adminApi.updateMealImage(mealSlug, image),
+    onError: handleApiError,
   });
   const { mutateAsync: deleteMealImage } = useMutation({
     mutationFn: adminApi.deleteMealImage,
+    onError: handleApiError,
   });
 
   const { mutateAsync: saveMeal, isPending } = useMutation({
@@ -123,7 +127,7 @@ export const useMealPopup = ({
       if (isImageMarkedForDeletion) {
         await deleteMealImage(meal.slug);
         await updateMeal({
-          mealId: meal.id,
+          mealSlug: meal.slug,
           data: { ...updateData, imageUrl: "" },
         });
         return;
@@ -135,7 +139,7 @@ export const useMealPopup = ({
           image,
         });
         await updateMeal({
-          mealId: meal.id,
+          mealSlug: meal.slug,
           data: {
             ...updateData,
             imageUrl: uploadResponse.data.imageUrl,
@@ -144,7 +148,7 @@ export const useMealPopup = ({
         return;
       }
 
-      await updateMeal({ mealId: meal.id, data: updateData });
+      await updateMeal({ mealSlug: meal.slug, data: updateData });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
