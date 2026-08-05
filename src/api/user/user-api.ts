@@ -68,7 +68,7 @@ export const userApi = {
   resetMealPlan: ({ planId }: ResetMealPlanParams) => {
     return userApiCall<ApiResponse<MealPlan>>({
       url: `${USER_API_PREFIX}/meals-plan/${planId}/reset`,
-      method: "POST",
+      method: "PATCH",
     });
   },
 };

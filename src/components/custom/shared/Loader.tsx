@@ -16,7 +16,7 @@ export const Loader = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-center",
+        "flex items-center justify-center z-5 bg-white/50",
         type === "global" && "min-h-screen",
         className
       )}

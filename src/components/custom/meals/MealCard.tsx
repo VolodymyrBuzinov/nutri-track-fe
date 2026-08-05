@@ -1,12 +1,18 @@
+import { Button } from "@/components/ui/button";
 import type { Meal } from "@/types";
 
 interface MealCardProps {
   meal: Meal;
+  onAdd?: (mealId: string) => void;
+  onClick?: () => void;
 }
 
-export const MealCard = ({ meal }: MealCardProps) => {
+export const MealCard = ({ meal, onAdd, onClick }: MealCardProps) => {
   return (
-    <article className="w-full max-w-xs overflow-hidden rounded-lg border border-border bg-white">
+    <article
+      className="w-full max-w-xs overflow-hidden rounded-lg border border-border bg-white"
+      onClick={onClick}
+    >
       <img
         src={meal.imageUrl}
         alt={meal.name}
@@ -21,6 +27,18 @@ export const MealCard = ({ meal }: MealCardProps) => {
           {meal.composition.calories} ккал
         </p>
       </div>
+      {onAdd ? (
+        <Button
+          className="text-xs z-5 m-2"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            onAdd?.(meal.id);
+          }}
+        >
+          Додати до плану
+        </Button>
+      ) : null}
     </article>
   );
 };
