@@ -33,6 +33,7 @@ export const UserLayout = ({ children }: UserLayoutProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ refetchType: "none" });
       setCurrentUser(null);
+      localStorage.clear();
     },
   });
 

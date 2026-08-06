@@ -4,22 +4,22 @@ import { DATE_FORMAT } from "@/lib/consts";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Droplets, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+const storageKey = `${format(new Date(), DATE_FORMAT)}-water-balance`;
 const GLASS_VOLUME_ML = 250;
-const DEFAULT_WATER_TARGET_ML = 2_000;
+const containerStyles =
+  "border-t border-border pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6";
 
 export const WaterBalance = () => {
   const { currentUser } = useAuth();
   const weight =
     currentUser.type === "user" ? currentUser.account?.weight : undefined;
-  const waterTargetMl =
-    weight && weight > 0
-      ? Math.round((weight * 30) / 50) * 50
-      : DEFAULT_WATER_TARGET_ML;
+  const waterTargetMl = weight && weight > 0 ? Math.round(weight * 30) : 0;
   const totalGlasses = Math.max(1, Math.ceil(waterTargetMl / GLASS_VOLUME_ML));
-  const storageKey = `${format(new Date(), DATE_FORMAT)}-water-balance`;
-  const [glassesDrunk, setGlassesDrunk] = useState(() => {
+  const [glassesDrunk, setGlassesDrunk] = useState(0);
+
+  useEffect(() => {
     Object.keys(localStorage).forEach((key) => {
       if (key.endsWith("-water-balance") && key !== storageKey) {
         localStorage.removeItem(key);
@@ -28,10 +28,10 @@ export const WaterBalance = () => {
 
     const savedValue = Number(localStorage.getItem(storageKey));
 
-    return Number.isInteger(savedValue) && savedValue >= 0
-      ? Math.min(savedValue, totalGlasses)
-      : 0;
-  });
+    if (Number.isInteger(savedValue) && savedValue >= 0) {
+      setGlassesDrunk(Math.min(savedValue, totalGlasses));
+    }
+  }, [weight]);
 
   const updateGlassesDrunk = (value: number) => {
     const nextValue = Math.min(Math.max(value, 0), totalGlasses);
@@ -41,8 +41,10 @@ export const WaterBalance = () => {
 
   const consumedMl = Math.min(glassesDrunk * GLASS_VOLUME_ML, waterTargetMl);
 
+  if (!weight) return null;
+
   return (
-    <div className="border-t border-border pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6">
+    <div className={containerStyles}>
       <div className="flex items-center gap-2">
         <Droplets
           className="size-5 fill-sky-500 text-sky-500"
@@ -78,7 +80,6 @@ export const WaterBalance = () => {
 
       <div className="mt-5 flex gap-2">
         <Button
-          className="flex-1"
           disabled={glassesDrunk === totalGlasses}
           onClick={() => updateGlassesDrunk(glassesDrunk + 1)}
         >
