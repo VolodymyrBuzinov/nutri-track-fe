@@ -25,9 +25,6 @@ const mealTypes: { type: string; label: string }[] = [
 
 const onSuccess = () => {
   queryClient.invalidateQueries({
-    queryKey: [userQueryKeys.getMealsPlan],
-  });
-  queryClient.invalidateQueries({
     queryKey: [userQueryKeys.getDashboardData],
   });
   toast.add({
@@ -47,14 +44,20 @@ export const MealsSection = () => {
     {
       mutationFn: userApi.createMealPlan,
       onError: handleApiError,
-      onSuccess,
+      onSuccess: (res) => {
+        queryClient.setQueryData([userQueryKeys.getMealsPlan, TODAY], res);
+        onSuccess();
+      },
     }
   );
 
   const { mutate: updateMealPlan, isPending: isUpdatingMealPlan } = useMutation(
     {
       mutationFn: userApi.updateMealPlan,
-      onSuccess,
+      onSuccess: (res) => {
+        queryClient.setQueryData([userQueryKeys.getMealsPlan, TODAY], res);
+        onSuccess();
+      },
       onError: handleApiError,
     }
   );
