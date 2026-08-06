@@ -24,6 +24,12 @@ const UserProfile = lazy(() =>
   }))
 );
 
+const MealPage = lazy(() =>
+  import("../pages/user/MealPage").then(({ MealPage }) => ({
+    default: MealPage,
+  }))
+);
+
 const AdminUsers = lazy(() =>
   import("../pages/admin/AdminUsers").then(({ AdminUsers }) => ({
     default: AdminUsers,
@@ -81,6 +87,14 @@ export const routesData: AppRoute[] = [
     element: (
       <UserProtectedRoute path={routes.user_profile}>
         <UserProfile />
+      </UserProtectedRoute>
+    ),
+  },
+  {
+    path: routes.user_meal_path,
+    element: (
+      <UserProtectedRoute path={routes.user_meal_path}>
+        <MealPage />
       </UserProtectedRoute>
     ),
   },

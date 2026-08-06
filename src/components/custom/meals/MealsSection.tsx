@@ -1,6 +1,6 @@
 import { mealsApi, mealsQueryKeys } from "@/api/meals/meals-api";
-import { userApi, userQueryKeys } from "@/api/user/user-api";
 import { MealCard } from "@/components/custom/meals/MealCard";
+import { useAddMealToPlan } from "@/components/custom/meals/useAddMealToPlan";
 import {
   Carousel,
   CarouselContent,
@@ -8,13 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { toast } from "@/components/ui/toast";
-import { TODAY } from "@/lib/consts";
-import { handleApiError } from "@/lib/utils";
-import { queryClient } from "@/queryClient";
-import type { MealPlan } from "@/types";
-
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../shared/Loader";
 
 const mealTypes: { type: string; label: string }[] = [
@@ -23,16 +17,6 @@ const mealTypes: { type: string; label: string }[] = [
   { type: "вечеря", label: "Вечері" },
 ];
 
-const onSuccess = () => {
-  queryClient.invalidateQueries({
-    queryKey: [userQueryKeys.getDashboardData],
-  });
-  toast.add({
-    title: "Страва додана до плану харчування",
-    type: "success",
-  });
-};
-
 export const MealsSection = () => {
   const { data: meals = [] } = useQuery({
     queryKey: [mealsQueryKeys.getMeals],
@@ -40,44 +24,7 @@ export const MealsSection = () => {
     select: (response) => response.data.data,
   });
 
-  const { mutate: createMealPlan, isPending: isCreatingMealPlan } = useMutation(
-    {
-      mutationFn: userApi.createMealPlan,
-      onError: handleApiError,
-      onSuccess: (res) => {
-        queryClient.setQueryData([userQueryKeys.getMealsPlan, TODAY], res);
-        onSuccess();
-      },
-    }
-  );
-
-  const { mutate: updateMealPlan, isPending: isUpdatingMealPlan } = useMutation(
-    {
-      mutationFn: userApi.updateMealPlan,
-      onSuccess: (res) => {
-        queryClient.setQueryData([userQueryKeys.getMealsPlan, TODAY], res);
-        onSuccess();
-      },
-      onError: handleApiError,
-    }
-  );
-
-  const handleAddMeal = (mealId: string) => {
-    const mealPlan = queryClient.getQueryData<{ data: { data: MealPlan } }>([
-      userQueryKeys.getMealsPlan,
-      TODAY,
-    ])?.data?.data;
-
-    if (mealPlan) {
-      return updateMealPlan({
-        planId: mealPlan.id,
-        date: mealPlan.date,
-        meals: [mealId],
-      });
-    }
-
-    createMealPlan({ date: TODAY, meals: [mealId] });
-  };
+  const { handleAddMeal, isPending } = useAddMealToPlan();
 
   return (
     <section
@@ -88,11 +35,11 @@ export const MealsSection = () => {
         Усі страви
       </h2>
 
-      <div className="mt-5 space-y-6 relative">
-        {isCreatingMealPlan || isUpdatingMealPlan ? (
+      <div className="relative mt-5 space-y-6">
+        {isPending ? (
           <Loader
             type="local"
-            className="absolute top-0 left-0 w-full h-full"
+            className="absolute top-0 left-0 h-full w-full"
           />
         ) : null}
         {mealTypes.map(({ type, label }) => {
@@ -100,7 +47,7 @@ export const MealsSection = () => {
 
           return (
             <div key={type}>
-              <h3 className="text-sm font-medium capitalize text-content font-bold">
+              <h3 className="text-sm font-bold capitalize text-content">
                 {label}
               </h3>
 
@@ -113,7 +60,7 @@ export const MealsSection = () => {
                     {mealsByType.map((meal) => (
                       <CarouselItem
                         key={meal.id}
-                        className="flex justify-center basis-80 relative"
+                        className="relative flex basis-80 justify-center"
                       >
                         <MealCard meal={meal} onAdd={handleAddMeal} />
                       </CarouselItem>

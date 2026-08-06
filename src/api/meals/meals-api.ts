@@ -18,9 +18,9 @@ export const mealsApi = {
       },
     });
   },
-  getMeal: (id: string) => {
+  getMeal: (slug: string) => {
     return userApiCall<ApiResponse<Meal>>({
-      url: `${MEALS_API_PREFIX}/${id}`,
+      url: `${MEALS_API_PREFIX}/${slug}`,
       method: "GET",
     });
   },
