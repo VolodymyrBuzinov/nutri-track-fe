@@ -48,7 +48,7 @@ export const WaterBalance = () => {
           className="size-5 fill-sky-500 text-sky-500"
           aria-hidden="true"
         />
-        <h2 className="font-heading text-lg font-semibold">Вода</h2>
+        <h2 className="font-heading text-lg font-semibold">Водний баланс</h2>
       </div>
       <p className="mt-3 text-2xl font-semibold tracking-tight text-content">
         {consumedMl / 1_000} л
@@ -69,9 +69,7 @@ export const WaterBalance = () => {
             key={index}
             className={cn(
               "size-7",
-              index < glassesDrunk
-                ? "fill-sky-500 text-sky-500"
-                : "text-border"
+              index < glassesDrunk ? "fill-sky-500 text-sky-500" : "text-border"
             )}
             aria-hidden="true"
           />

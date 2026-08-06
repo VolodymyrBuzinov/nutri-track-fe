@@ -1,21 +1,46 @@
-import type { DashboardProgress } from "@/types";
+import type { Dashboard } from "@/types";
 import { ProgressBar } from "@/components/custom/user/ProgressBar";
-import { Flame } from "lucide-react";
+import { AlertTriangle, Flame } from "lucide-react";
 
-interface DailyNormsProps {
-  progress: DashboardProgress | undefined;
-}
+interface DailyNormsProps extends Omit<Dashboard, "recommendedMeals"> {}
 
-export const DailyNorms = ({ progress }: DailyNormsProps) => {
+const sectionStyles =
+  "rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6";
+const sectionAriaLabel = "daily-norms-title";
+
+export const DailyNorms = ({
+  progress,
+  status,
+  missingProfileFields,
+}: DailyNormsProps) => {
+  const isReady = status === "ready";
+
+  if (!isReady && missingProfileFields?.length)
+    return (
+      <section aria-labelledby={sectionAriaLabel} className={sectionStyles}>
+        <div className="mb-4">
+          <AlertTriangle
+            className="size-12 fill-main text-white"
+            aria-hidden="true"
+          />
+          <h2
+            id={sectionAriaLabel}
+            className="font-heading text-lg font-semibold"
+          >
+            Для того щоби бачити денні норми, будь ласка, заповніть такі дані
+            профілю
+          </h2>
+          <p className="text-main">{missingProfileFields.join(", ")}</p>
+        </div>
+      </section>
+    );
+
   return (
-    <section
-      aria-labelledby="daily-norms-title"
-      className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6"
-    >
+    <section aria-labelledby={sectionAriaLabel} className={sectionStyles}>
       <div className="mb-4 flex items-center gap-2">
         <Flame className="size-5 fill-main text-main" aria-hidden="true" />
         <h2
-          id="daily-norms-title"
+          id={sectionAriaLabel}
           className="font-heading text-lg font-semibold"
         >
           Денна норма калорій

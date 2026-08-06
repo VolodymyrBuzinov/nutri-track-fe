@@ -25,7 +25,11 @@ export const UserDashboard = () => {
         <Loader type="global" />
       ) : (
         <div className="space-y-6">
-          <DailyNorms progress={dashboard?.progress} />
+          <DailyNorms
+            progress={dashboard?.progress}
+            status={dashboard?.status}
+            missingProfileFields={dashboard?.missingProfileFields}
+          />
           <MealPlan />
           <section
             aria-labelledby="recommendations-title"

@@ -1,5 +1,6 @@
 import type {
   Dashboard,
+  DeleteMealFromPlanParams,
   GetDashboardParams,
   GetMealPlanParams,
   LoginRequest,
@@ -49,6 +50,13 @@ export const userApi = {
       url: `${USER_API_PREFIX}/meals-plan`,
       method: "POST",
       data,
+    });
+  },
+
+  removeMealPlanItem: ({ planId, mealId }: DeleteMealFromPlanParams) => {
+    return userApiCall<ApiResponse<MealPlan>>({
+      url: `${USER_API_PREFIX}/meals-plan/${planId}/meals/${mealId}`,
+      method: "DELETE",
     });
   },
   updateMealPlan: ({

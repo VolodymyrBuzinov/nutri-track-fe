@@ -151,13 +151,13 @@ export interface NutrientProgress {
 export interface Dashboard {
   /** Whether the user has supplied all profile values required for accurate nutrient targets. */
   status: "ready" | "profile_incomplete";
-  /** Profile fields the user must complete before dashboard progress is available. */
+  /** Localized labels of profile fields the user must complete before dashboard progress is meaningful. */
   missingProfileFields: (
-    | "age"
-    | "weight"
-    | "gender"
-    | "height"
-    | "activityLevel"
+    | "Вік"
+    | "Вага"
+    | "Стать"
+    | "Зріст"
+    | "Рівень активності"
   )[];
   progress: DashboardProgress;
   recommendedMeals: Meal[];
@@ -198,9 +198,9 @@ export interface GetMealsParams {
   search?: string;
 }
 
-export interface GetMealParams {
-  /** Meal identifier. */
-  id: string;
+export interface GetMealBySlugParams {
+  /** Meal slug. */
+  slug: string;
 }
 
 export interface GetMealPlanParams {
@@ -220,6 +220,13 @@ export interface UpdateMealPlanParams {
 export interface ResetMealPlanParams {
   /** Meal plan identifier. */
   planId: string;
+}
+
+export interface DeleteMealFromPlanParams {
+  /** Meal plan identifier. */
+  planId: string;
+  /** Meal identifier. */
+  mealId: string;
 }
 
 export interface GetDashboardParams {
@@ -254,19 +261,19 @@ export interface AdminGetMealsParams {
   search?: string;
 }
 
-export interface AdminGetMealParams {
-  /** Meal identifier. */
-  mealId: string;
+export interface AdminGetMealBySlugParams {
+  /** Meal slug. */
+  mealSlug: string;
 }
 
 export interface AdminUpdateMealParams {
-  /** Meal identifier. */
-  mealId: string;
+  /** Meal slug. */
+  mealSlug: string;
 }
 
 export interface AdminDeleteMealParams {
-  /** Meal identifier. */
-  mealId: string;
+  /** Meal slug. */
+  mealSlug: string;
 }
 
 /** @format binary */

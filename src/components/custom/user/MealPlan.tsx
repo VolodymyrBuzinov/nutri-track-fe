@@ -53,8 +53,8 @@ export const MealPlan = () => {
     onError: handleApiError,
   });
 
-  const { mutate: updateMealPlan, isPending: isUpdating } = useMutation({
-    mutationFn: userApi.updateMealPlan,
+  const { mutate: removeMealPlanItem, isPending: isRemoving } = useMutation({
+    mutationFn: userApi.removeMealPlanItem,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [userQueryKeys.getMealsPlan, date],
@@ -72,12 +72,9 @@ export const MealPlan = () => {
       return;
     }
 
-    updateMealPlan({
+    removeMealPlanItem({
       planId: mealPlan.id,
-      date,
-      meals: mealPlan.meals
-        .filter((meal) => meal.id !== idToRemove)
-        .map((meal) => meal.id),
+      mealId: idToRemove,
     });
     setIdToRemove("");
   };
@@ -89,13 +86,16 @@ export const MealPlan = () => {
         className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6"
       >
         <div className="flex items-center justify-between gap-4">
-          <h2 id="meal-plan-title" className="font-heading text-lg font-semibold">
+          <h2
+            id="meal-plan-title"
+            className="font-heading text-lg font-semibold"
+          >
             Мій план на сьогодні
           </h2>
           <Button
             variant="outline"
             size="sm"
-            disabled={!mealPlan || isResetting}
+            disabled={isResetting || !mealPlan?.meals?.length}
             onClick={() => setIsResetConfirmationOpen(true)}
           >
             Очистити план
@@ -188,7 +188,7 @@ export const MealPlan = () => {
         onOpenChange={(open) => !open && setIdToRemove("")}
         title="Видалити страву з плану?"
         onConfirm={handleRemoveMeal}
-        isLoading={isUpdating}
+        isLoading={isRemoving}
       />
 
       <ConfirmationPopup
