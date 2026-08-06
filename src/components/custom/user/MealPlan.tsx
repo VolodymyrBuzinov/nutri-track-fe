@@ -1,49 +1,35 @@
 import { ConfirmationPopup } from "@/components/custom/shared/ConfirmationPopup";
 import { MealCard } from "@/components/custom/meals/MealCard";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import { userApi, userQueryKeys } from "@/api/user/user-api";
 import { toast } from "@/components/ui/toast";
-import { DATE_FORMAT } from "@/lib/consts";
+import { TODAY } from "@/lib/consts";
 import { handleApiError } from "@/lib/utils";
 import { queryClient } from "@/queryClient";
 import type { Meal } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 const mealSlots: Meal["type"][] = ["сніданок", "обід", "вечеря"];
 
 export const MealPlan = () => {
-  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [idToRemove, setIdToRemove] = useState("");
   const [isResetConfirmationOpen, setIsResetConfirmationOpen] = useState(false);
-  const date = format(new Date(), DATE_FORMAT);
 
   const { data: mealPlan } = useQuery({
-    queryKey: [userQueryKeys.getMealsPlan, date],
-    queryFn: () => userApi.getMealsPlan({ date }),
+    queryKey: [userQueryKeys.getMealsPlan, TODAY],
+    queryFn: () => userApi.getMealsPlan({ date: TODAY }),
     select: (response) => response.data.data,
   });
 
   const { mutate: resetMealPlan, isPending: isResetting } = useMutation({
     mutationFn: userApi.resetMealPlan,
-    onSuccess: () => {
+    onSuccess: (res) => {
+      queryClient.setQueryData([userQueryKeys.getMealsPlan, TODAY], res);
       queryClient.invalidateQueries({
-        queryKey: [userQueryKeys.getMealsPlan, date],
+        queryKey: [userQueryKeys.getDashboardData],
       });
       toast.add({
         title: "План харчування на сьогодні скинуто",
@@ -55,12 +41,13 @@ export const MealPlan = () => {
 
   const { mutate: removeMealPlanItem, isPending: isRemoving } = useMutation({
     mutationFn: userApi.removeMealPlanItem,
-    onSuccess: () => {
+    onSuccess: (res) => {
+      queryClient.setQueryData([userQueryKeys.getMealsPlan, TODAY], res);
       queryClient.invalidateQueries({
-        queryKey: [userQueryKeys.getMealsPlan, date],
+        queryKey: [userQueryKeys.getDashboardData],
       });
       toast.add({
-        title: "План харчування на сьогодні оновлено",
+        title: "Страва успішно видалена з плану",
         type: "success",
       });
     },
@@ -123,65 +110,20 @@ export const MealPlan = () => {
             }
 
             return (
-              <DropdownMenu key={slot}>
-                <DropdownMenuTrigger
-                  render={
-                    <button
-                      type="button"
-                      className="group relative w-full text-left transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main/30"
-                    />
-                  }
+              <div key={slot} className="relative">
+                <MealCard meal={meal} />
+                <Button
+                  className="absolute top-2 right-2"
+                  size="sm"
+                  onClick={() => setIdToRemove(meal.id)}
                 >
-                  <MealCard meal={meal} />
-                  <MoreHorizontal
-                    className="absolute top-2 right-2 size-5 rounded bg-white/90 p-0.5 text-content"
-                    aria-hidden="true"
-                  />
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setSelectedMeal(meal)}>
-                    <Eye />
-                    Переглянути деталі
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => setIdToRemove(meal.id)}
-                  >
-                    <Trash2 />
-                    Видалити
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <Trash2 />
+                </Button>
+              </div>
             );
           })}
         </div>
       </section>
-
-      <Dialog
-        open={selectedMeal !== null}
-        onOpenChange={(open) => !open && setSelectedMeal(null)}
-      >
-        {selectedMeal && (
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{selectedMeal.name}</DialogTitle>
-              <DialogDescription>{selectedMeal.description}</DialogDescription>
-            </DialogHeader>
-            <img
-              src={selectedMeal.imageUrl}
-              alt={selectedMeal.name}
-              className="h-48 w-full rounded-lg object-cover"
-            />
-            <div className="grid grid-cols-2 gap-3 text-sm text-content-muted">
-              <span>Калорії: {selectedMeal.composition.calories} ккал</span>
-              <span>Білки: {selectedMeal.composition.protein} г</span>
-              <span>Жири: {selectedMeal.composition.fat} г</span>
-              <span>Вуглеводи: {selectedMeal.composition.carbohydrates} г</span>
-            </div>
-          </DialogContent>
-        )}
-      </Dialog>
 
       <ConfirmationPopup
         open={!!idToRemove}

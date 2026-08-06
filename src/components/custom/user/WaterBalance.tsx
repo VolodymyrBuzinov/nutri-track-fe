@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
-import { DATE_FORMAT } from "@/lib/consts";
+import { TODAY } from "@/lib/consts";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { Droplets, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const storageKey = `${format(new Date(), DATE_FORMAT)}-water-balance`;
+const storageKey = `${TODAY}-water-balance`;
 const GLASS_VOLUME_ML = 250;
 const containerStyles =
   "border-t border-border pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6";

@@ -9,13 +9,12 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { toast } from "@/components/ui/toast";
-import { DATE_FORMAT } from "@/lib/consts";
+import { TODAY } from "@/lib/consts";
 import { handleApiError } from "@/lib/utils";
 import { queryClient } from "@/queryClient";
 import type { MealPlan } from "@/types";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { format } from "date-fns/format";
 import { Loader } from "../shared/Loader";
 
 const mealTypes: { type: string; label: string }[] = [
@@ -36,8 +35,6 @@ const onSuccess = () => {
     type: "success",
   });
 };
-
-const today = format(new Date(), DATE_FORMAT);
 
 export const MealsSection = () => {
   const { data: meals = [] } = useQuery({
@@ -65,7 +62,7 @@ export const MealsSection = () => {
   const handleAddMeal = (mealId: string) => {
     const mealPlan = queryClient.getQueryData<{ data: { data: MealPlan } }>([
       userQueryKeys.getMealsPlan,
-      today,
+      TODAY,
     ])?.data?.data;
 
     if (mealPlan) {
@@ -76,7 +73,7 @@ export const MealsSection = () => {
       });
     }
 
-    createMealPlan({ date: today, meals: [mealId] });
+    createMealPlan({ date: TODAY, meals: [mealId] });
   };
 
   return (

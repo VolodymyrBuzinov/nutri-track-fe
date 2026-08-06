@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 export const ALLOWED_IMAGE_MIME_TYPES = [
   "image/jpeg",
@@ -6,3 +8,5 @@ export const ALLOWED_IMAGE_MIME_TYPES = [
 ];
 
 export const DATE_FORMAT = "yyyy-MM-dd";
+
+export const TODAY = format(new Date(), DATE_FORMAT);

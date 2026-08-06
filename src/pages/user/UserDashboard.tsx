@@ -7,14 +7,12 @@ import { Recommendations } from "@/components/custom/user/Recommendations";
 import { WaterBalance } from "@/components/custom/user/WaterBalance";
 import { UserLayout } from "@/layouts/UserLayout";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { DATE_FORMAT } from "@/lib/consts";
+import { TODAY } from "@/lib/consts";
 
 export const UserDashboard = () => {
-  const date = format(new Date(), DATE_FORMAT);
   const { data: dashboard, isPending: isDashboardPending } = useQuery({
-    queryKey: [userQueryKeys.getDashboardData],
-    queryFn: () => userApi.getDashboardData({ date }),
+    queryKey: [userQueryKeys.getDashboardData, TODAY],
+    queryFn: () => userApi.getDashboardData({ date: TODAY }),
     select: (res) => res?.data?.data,
   });
   if (!dashboard && !isDashboardPending) return <UserLayout>{null}</UserLayout>;
