@@ -53,7 +53,8 @@ export const ProgressBar = ({
           data-slot="progress-bar-indicator"
           className={cn(
             "h-full rounded-full transition-[width]",
-            colors[progressBarColor]
+            colors[progressBarColor],
+            consumed > total ? "!bg-warning" : ""
           )}
           style={{ width: `${percentage}%` }}
         />
