@@ -57,10 +57,10 @@ export const MealsSection = () => {
                   className="mt-3"
                 >
                   <CarouselContent>
-                    {mealsByType.map((meal) => (
+                    {mealsByType?.map((meal) => (
                       <CarouselItem
                         key={meal.id}
-                        className="relative flex basis-80 justify-center"
+                        className="relative flex basis-70 justify-center"
                       >
                         <MealCard meal={meal} onAdd={handleAddMeal} />
                       </CarouselItem>

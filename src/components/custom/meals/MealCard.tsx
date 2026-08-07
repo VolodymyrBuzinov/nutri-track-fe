@@ -4,15 +4,26 @@ import { cn } from "@/lib/utils";
 import { routes } from "@/routing/routes";
 import type { Meal } from "@/types";
 import { Link } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 
 interface MealCardProps {
   meal: Meal;
   onAdd?: (mealId: string) => void;
+  onRemove?: (mealId: string) => void;
 }
 
-export const MealCard = ({ meal, onAdd }: MealCardProps) => {
+export const MealCard = ({ meal, onAdd, onRemove }: MealCardProps) => {
   return (
-    <article className="flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+    <article className="relative w-65 max-w-xs overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+      {onRemove ? (
+        <Button
+          className="absolute top-2 right-2 z-2"
+          size="sm"
+          onClick={() => onRemove(meal.id)}
+        >
+          <Trash2 />
+        </Button>
+      ) : null}
       <div className="relative">
         <img
           src={meal.imageUrl}

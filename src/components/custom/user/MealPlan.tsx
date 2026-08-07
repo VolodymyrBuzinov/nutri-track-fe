@@ -9,7 +9,6 @@ import { handleApiError } from "@/lib/utils";
 import { queryClient } from "@/queryClient";
 import type { Meal } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
 const mealSlots: Meal["type"][] = ["сніданок", "обід", "вечеря"];
@@ -89,7 +88,7 @@ export const MealPlan = () => {
           </Button>
         </div>
 
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-4 flex flex-wrap gap-3 justify-center items-center">
           {mealSlots.map((slot) => {
             const meal = mealPlan?.meals.find((item) => item.type === slot);
 
@@ -97,7 +96,7 @@ export const MealPlan = () => {
               return (
                 <div
                   key={slot}
-                  className="rounded-lg border border-dashed border-border p-4"
+                  className="rounded-lg border border-dashed border-border p-4 min-w-65"
                 >
                   <p className="text-sm font-medium capitalize text-content">
                     {slot}
@@ -111,14 +110,7 @@ export const MealPlan = () => {
 
             return (
               <div key={slot} className="relative">
-                <MealCard meal={meal} />
-                <Button
-                  className="absolute top-2 right-2"
-                  size="sm"
-                  onClick={() => setIdToRemove(meal.id)}
-                >
-                  <Trash2 />
-                </Button>
+                <MealCard meal={meal} onRemove={setIdToRemove} />
               </div>
             );
           })}
