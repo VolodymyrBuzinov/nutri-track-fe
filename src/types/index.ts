@@ -51,7 +51,6 @@ export interface User {
   weight: number;
   gender: "чоловік" | "жінка" | "";
   height: number;
-  activityLevel: "малий" | "середній" | "високий" | "";
   avatarUrl: string;
 }
 
@@ -61,7 +60,6 @@ export interface UpdateUserRequest {
   weight?: number;
   gender?: "чоловік" | "жінка" | "";
   height?: number;
-  activityLevel?: "малий" | "середній" | "високий" | "";
 }
 
 export interface MealProduct {
@@ -152,13 +150,7 @@ export interface Dashboard {
   /** Whether the user has supplied all profile values required for accurate nutrient targets. */
   status: "ready" | "profile_incomplete";
   /** Localized labels of profile fields the user must complete before dashboard progress is meaningful. */
-  missingProfileFields: (
-    | "Вік"
-    | "Вага"
-    | "Стать"
-    | "Зріст"
-    | "Рівень активності"
-  )[];
+  missingProfileFields: ("Вік" | "Вага" | "Стать" | "Зріст")[];
   progress: DashboardProgress;
   recommendedMeals: Meal[];
 }

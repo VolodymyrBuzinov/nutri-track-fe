@@ -19,7 +19,7 @@ export const MealPage = () => {
     isError,
   } = useQuery({
     queryKey: [mealsQueryKeys.getMeal, slug],
-    queryFn: () => mealsApi.getMeal(slug!),
+    queryFn: () => mealsApi.getMeal(slug ?? ""),
     select: (response) => response.data.data,
     enabled: Boolean(slug),
   });

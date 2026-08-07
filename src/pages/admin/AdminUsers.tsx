@@ -73,11 +73,6 @@ const getUsersTableHead = ({
       render: (user) => `${user.weight} кг`,
     },
     {
-      key: "activityLevel",
-      name: "Активність",
-      render: (user) => user.activityLevel || "—",
-    },
-    {
       key: "createdAt",
       name: "Дата реєстрації",
       render: (user) => user.createdAt,
