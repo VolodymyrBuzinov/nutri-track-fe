@@ -1,32 +1,27 @@
 import { useAuth } from "@/context/authContext";
-import { format } from "date-fns";
-import { uk } from "date-fns/locale";
 import { CalendarDays, Trash2, Upload } from "lucide-react";
 import { UserAvatar } from "@/components/custom/user/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import localLoader from "@/assets/local-loader.svg";
 import type { User } from "@/types";
-import { handleApiError } from "@/lib/utils";
+import { getMaxImageSizeMB, handleApiError } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/components/ui/toast";
-import { userApi, userQueryKeys } from "@/api/user/user-api";
-import { queryClient } from "@/queryClient";
-import { ALLOWED_IMAGE_MIME_TYPES, MAX_IMAGE_SIZE_BYTES } from "@/lib/consts";
+import { userApi } from "@/api/user/user-api";
+import { ALLOWED_IMAGE_MIME_TYPES } from "@/lib/consts";
 import { useRef } from "react";
 
 export const ProfileBadge = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, setCurrentUser } = useAuth();
   const user = currentUser.account as User;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: uploadAvatar, isPending: isUploading } = useMutation({
     mutationFn: userApi.uploadUserAvatar,
-    onSuccess: (data) => {
-      queryClient.setQueryData([userQueryKeys.getUser], {
-        type: "user",
-        account: { ...user, avatarUrl: data?.data?.data?.avatarUrl ?? "" },
-      });
+    onSuccess: ({ data }) => {
+      const updatedUser = { ...user, avatarUrl: data.data.avatarUrl };
+      setCurrentUser(updatedUser);
       toast.add({ title: "Фото профілю оновлено", type: "success" });
     },
     onError: handleApiError,
@@ -35,6 +30,7 @@ export const ProfileBadge = () => {
   const { mutate: deleteAvatar, isPending: isDeleting } = useMutation({
     mutationFn: userApi.deleteUserAvatar,
     onSuccess: () => {
+      setCurrentUser({ ...user, avatarUrl: "" });
       toast.add({ title: "Фото профілю видалено", type: "success" });
     },
     onError: handleApiError,
@@ -42,12 +38,14 @@ export const ProfileBadge = () => {
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
     uploadAvatar(file);
   };
   const isAvatarBusy = isUploading || isDeleting;
+
   return (
-    <aside className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6">
+    <aside className="rounded-xl border border-border bg-white p-6 shadow-sm mx-auto">
       <div className="flex flex-col items-center text-center">
         <div className="relative">
           <UserAvatar
@@ -77,9 +75,7 @@ export const ProfileBadge = () => {
           type="file"
           accept={ALLOWED_IMAGE_MIME_TYPES.join(",")}
           className="sr-only"
-          onChange={(event) => {
-            event.target.value = "";
-          }}
+          onChange={handleAvatarChange}
         />
 
         <Button
@@ -106,8 +102,9 @@ export const ProfileBadge = () => {
           </Button>
         ) : null}
 
-        <p className="mt-2 text-xs text-content-muted">
-          JPG, PNG або WebP • до {MAX_IMAGE_SIZE_BYTES / (1024 * 1024)} МБ
+        <p className="mt-2 text-xs text-content-muted capitalize">
+          {ALLOWED_IMAGE_MIME_TYPES.join(", ").replaceAll("image/", "")} • до{" "}
+          {getMaxImageSizeMB()} МБ
         </p>
       </div>
 
@@ -120,10 +117,7 @@ export const ProfileBadge = () => {
         <p className="text-sm text-content-muted">{user.email}</p>
         <p className="inline-flex items-center justify-center gap-2 text-sm text-content-muted">
           <CalendarDays className="size-4 shrink-0" aria-hidden="true" />З нами
-          з{" "}
-          {format(new Date(user.createdAt), "d MMMM yyyy", {
-            locale: uk,
-          })}
+          з {user.createdAt}
         </p>
       </div>
     </aside>

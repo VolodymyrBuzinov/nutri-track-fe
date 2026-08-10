@@ -1,6 +1,7 @@
 import { toast } from "@/components/ui/toast";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { MAX_IMAGE_SIZE_BYTES } from "./consts";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -35,3 +36,6 @@ export const slugFilter = (value: string) =>
     .toLowerCase()
     .replace(/[^a-z]+/g, "-")
     .replace(/^-+/, "");
+
+export const getMaxImageSizeMB = () =>
+  Math.floor(MAX_IMAGE_SIZE_BYTES / (1024 * 1024));

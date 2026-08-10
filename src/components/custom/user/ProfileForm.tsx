@@ -2,16 +2,11 @@ import { userApi, userQueryKeys } from "@/api/user/user-api";
 import { Button } from "@/components/ui/button";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -32,11 +27,11 @@ import { queryClient } from "@/queryClient";
 import type { User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { AlertCircle, CheckCircle2, LockKeyhole } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-const numberFields = [
+const parametersFields = [
   { name: "age", label: "Вік", suffix: "років" },
   { name: "weight", label: "Вага", suffix: "кг" },
   { name: "height", label: "Зріст", suffix: "см" },
@@ -47,8 +42,7 @@ const getDefaultValues = (user: User): ProfileFormInput => ({
   age: user.age > 0 ? user.age : undefined,
   weight: user.weight > 0 ? user.weight : undefined,
   height: user.height > 0 ? user.height : undefined,
-  gender:
-    user.gender === "чоловік" || user.gender === "жінка" ? user.gender : "",
+  gender: user.gender ?? "",
 });
 
 const isProfileFieldFilled = (value: unknown) =>
@@ -114,7 +108,7 @@ export const ProfileForm = () => {
       aria-labelledby="profile-form-title"
       className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6 flex-1 min-w-80"
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className=" flex flex-wrap justify-between items-center gap-2 mb-6">
         <h2
           id="profile-form-title"
           className="font-heading text-lg font-semibold text-content"
@@ -134,16 +128,16 @@ export const ProfileForm = () => {
           ) : (
             <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
           )}
-          {isComplete ? "Дані профілю актуальні" : "Заповніть дані профілю"}
+          {isComplete ? (
+            <span>Дані профілю повністю заповнені</span>
+          ) : (
+            <span>Заповніть дані профілю</span>
+          )}
         </span>
       </div>
 
-      <form
-        className="mt-6 space-y-5"
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <Field data-invalid={Boolean(errors.name)}>
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <Field data-invalid={Boolean(errors.name)} className="mb-4">
           <FieldLabel htmlFor="profile-name">Ім&apos;я</FieldLabel>
           <Input
             id="profile-name"
@@ -158,25 +152,8 @@ export const ProfileForm = () => {
           {errors.name ? <FieldError errors={[errors.name]} /> : null}
         </Field>
 
-        <Field>
-          <FieldLabel htmlFor="profile-email">Електронна пошта</FieldLabel>
-          <InputGroup>
-            <InputGroupInput
-              id="profile-email"
-              type="email"
-              value={user.email}
-              readOnly
-              disabled
-            />
-            <InputGroupAddon align="inline-end">
-              <LockKeyhole className="size-4" aria-hidden="true" />
-            </InputGroupAddon>
-          </InputGroup>
-          <FieldDescription>Email неможливо змінити</FieldDescription>
-        </Field>
-
-        <FieldGroup className="sm:grid-cols-2">
-          {numberFields.map(({ name, label, suffix }) => {
+        <FieldGroup className="grid grid-cols-2 gap-4">
+          {parametersFields.map(({ name, label, suffix }) => {
             const fieldError = errors[name];
             const inputId = `profile-${name}`;
 
@@ -234,7 +211,10 @@ export const ProfileForm = () => {
                     id="profile-gender"
                     aria-invalid={fieldState.invalid}
                   >
-                    <SelectValue placeholder="Оберіть стать" />
+                    <SelectValue
+                      className="capitalize"
+                      placeholder="Оберіть стать"
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="жінка">Жінка</SelectItem>
@@ -249,7 +229,7 @@ export const ProfileForm = () => {
           />
         </FieldGroup>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
+        <div className="flex gap-3 mt-6 justify-end">
           <Button
             type="button"
             variant="secondary"
