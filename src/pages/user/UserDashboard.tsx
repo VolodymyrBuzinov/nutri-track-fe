@@ -15,32 +15,29 @@ export const UserDashboard = () => {
     queryFn: () => userApi.getDashboardData({ date: TODAY }),
     select: (res) => res?.data?.data,
   });
-  if (!dashboard && !isDashboardPending) return <UserLayout>{null}</UserLayout>;
 
   return (
-    <UserLayout>
+    <UserLayout mainClassName="space-y-6">
       {isDashboardPending ? (
         <Loader type="global" />
-      ) : (
-        <div className="space-y-6">
-          <DailyNorms
-            progress={dashboard?.progress}
-            status={dashboard?.status}
-            missingProfileFields={dashboard?.missingProfileFields}
-          />
-          <MealPlan />
-          <section
-            aria-labelledby="recommendations-title"
-            className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6"
-          >
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-              <Recommendations />
-              <WaterBalance />
-            </div>
-          </section>
-          <MealsSection />
+      ) : dashboard ? (
+        <DailyNorms
+          progress={dashboard.progress}
+          status={dashboard.status}
+          missingProfileFields={dashboard.missingProfileFields}
+        />
+      ) : null}
+      <MealPlan />
+      <section
+        aria-labelledby="recommendations-title"
+        className="rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6"
+      >
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <Recommendations />
+          <WaterBalance />
         </div>
-      )}
+      </section>
+      <MealsSection />
     </UserLayout>
   );
 };

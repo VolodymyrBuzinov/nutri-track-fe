@@ -18,6 +18,7 @@ import logo from "@/assets/logo.svg";
 
 interface UserLayoutProps {
   children: React.ReactNode;
+  mainClassName?: string;
 }
 
 const userPages = [
@@ -25,7 +26,10 @@ const userPages = [
   { name: "Профіль", path: routes.user_profile, icon: UserRound },
 ];
 
-export const UserLayout = ({ children }: UserLayoutProps) => {
+export const UserLayout = ({
+  children,
+  mainClassName = "",
+}: UserLayoutProps) => {
   const location = useLocation();
   const { currentUser, setCurrentUser } = useAuth();
   const user = currentUser?.account as User;
@@ -116,7 +120,12 @@ export const UserLayout = ({ children }: UserLayoutProps) => {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <main
+        className={cn(
+          "mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6 sm:py-8 lg:px-8",
+          mainClassName
+        )}
+      >
         {children}
       </main>
 
