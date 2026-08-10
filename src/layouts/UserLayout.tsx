@@ -14,6 +14,7 @@ import type { User } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { ChevronDown, Home, LogOut, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import logo from "@/assets/logo.svg";
 
 interface UserLayoutProps {
   children: React.ReactNode;
@@ -47,7 +48,7 @@ export const UserLayout = ({ children }: UserLayoutProps) => {
             className="shrink-0"
           >
             <img
-              src="/src/assets/logo.svg"
+              src={logo}
               alt="Nutri Track"
               width={245}
               height={56}
