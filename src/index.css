@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/montserrat";
 @import "@fontsource-variable/roboto";
 
 @custom-variant dark (&:is(.dark *));
@@ -92,7 +91,7 @@
 }
 
 @theme inline {
-  --font-sans: "Montserrat Variable", sans-serif;
+  --font-sans: "Roboto Variable", sans-serif;
   --font-heading: "Roboto Variable", sans-serif;
   --text-10: 0.625rem;
   --text-32: 2rem;
