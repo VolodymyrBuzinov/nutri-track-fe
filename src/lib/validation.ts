@@ -82,5 +82,23 @@ export const mealSchema = z.object({
   }),
 });
 
+const profileNumberValidation = (label: string, max: number) =>
+  z.coerce
+    .number(`${label} є обов'язковим`)
+    .positive(`${label} повинен бути більшим за нуль`)
+    .max(max, `${label} перевищує допустиме значення`);
+
+export const profileSchema = z.object({
+  name: nameValidation,
+  age: profileNumberValidation("Вік", 100),
+  weight: profileNumberValidation("Вага", 150),
+  height: profileNumberValidation("Зріст", 250),
+  gender: z
+    .enum(["чоловік", "жінка", ""])
+    .refine((value) => value !== "", { message: "Оберіть стать" }),
+});
+
 export type MealFormInput = z.input<typeof mealSchema>;
 export type MealSchema = z.infer<typeof mealSchema>;
+export type ProfileSchema = z.infer<typeof profileSchema>;
+export type ProfileFormInput = z.input<typeof profileSchema>;

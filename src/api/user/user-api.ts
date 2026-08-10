@@ -8,6 +8,8 @@ import type {
   MealPlanRequest,
   ResetMealPlanParams,
   UpdateMealPlanParams,
+  UpdateUserRequest,
+  UploadUserAvatarPayload,
   User,
 } from "@/types";
 import { userApiCall, type ApiResponse } from "../api";
@@ -25,6 +27,26 @@ export const userApi = {
     return userApiCall<ApiResponse<User>>({
       url: `${USER_API_PREFIX}/me`,
       method: "GET",
+    });
+  },
+  updateUser: (data: UpdateUserRequest) => {
+    return userApiCall<ApiResponse<User>>({
+      url: `${USER_API_PREFIX}/me`,
+      method: "PATCH",
+      data,
+    });
+  },
+  uploadUserAvatar: (file: UploadUserAvatarPayload) => {
+    return userApiCall<ApiResponse<{ avatarUrl: string }>>({
+      url: `${USER_API_PREFIX}/me/image`,
+      method: "PATCH",
+      data: file,
+    });
+  },
+  deleteUserAvatar: () => {
+    return userApiCall<void>({
+      url: `${USER_API_PREFIX}/me/image`,
+      method: "DELETE",
     });
   },
   getDashboardData: (params: GetDashboardParams) => {
