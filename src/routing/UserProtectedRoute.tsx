@@ -6,16 +6,14 @@ import { Navigate } from "react-router-dom";
 
 interface UserProtectedRouteProps {
   children: ReactNode;
-  isPending?: boolean;
   path: string;
 }
 
 export const UserProtectedRoute = ({
   children,
-  isPending,
   path,
 }: UserProtectedRouteProps) => {
-  const { currentUser } = useAuth();
+  const { currentUser, isPending } = useAuth();
   if (isPending) return <Loader />;
 
   if (currentUser?.account === null && path !== routes.login) {

@@ -57,7 +57,7 @@ export const MealPage = () => {
           className="inline-flex items-center gap-2 text-sm text-content-muted transition-colors hover:text-main"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
-          Назад до страв
+          Назад на головну
         </Link>
 
         <section className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
@@ -109,7 +109,7 @@ export const MealPage = () => {
 
               <div className="mt-6">
                 <Button
-                  className="w-full"
+                  className="mx-auto flex"
                   disabled={isAdding}
                   onClick={() => handleAddMeal(meal.id)}
                 >
