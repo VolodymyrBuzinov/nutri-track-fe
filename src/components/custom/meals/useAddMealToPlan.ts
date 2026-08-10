@@ -45,6 +45,13 @@ export const useAddMealToPlan = () => {
       TODAY,
     ])?.data?.data;
 
+    if (mealPlan?.meals.some((meal) => meal.id === mealId)) {
+      return toast.add({
+        title: "Ця страва вже є у плані",
+        type: "warning",
+      });
+    }
+
     if (mealPlan) {
       return updateMealPlan({
         planId: mealPlan.id,
