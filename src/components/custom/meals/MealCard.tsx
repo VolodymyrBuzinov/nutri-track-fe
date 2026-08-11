@@ -28,6 +28,8 @@ export const MealCard = ({ meal, onAdd, onRemove }: MealCardProps) => {
         <img
           src={meal.imageUrl}
           alt={meal.name}
+          decoding="async"
+          fetchPriority="high"
           className="h-40 w-full object-cover"
         />
         <span className="absolute left-3 top-3 rounded-md bg-main-soft px-2.5 py-1 text-xs font-medium capitalize text-main">
