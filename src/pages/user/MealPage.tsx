@@ -67,6 +67,10 @@ export const MealPage = () => {
                 src={meal.imageUrl}
                 alt={meal.name}
                 className="aspect-[4/3] w-full object-cover"
+                width={400}
+                height={300}
+                decoding="async"
+                fetchPriority="high"
               />
               <span className="absolute left-3 top-3 rounded-md bg-main px-2.5 py-1 text-xs font-medium capitalize text-white">
                 {meal.type}

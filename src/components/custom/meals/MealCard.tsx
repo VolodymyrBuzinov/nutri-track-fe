@@ -29,6 +29,8 @@ export const MealCard = ({ meal, onAdd, onRemove }: MealCardProps) => {
           src={meal.imageUrl}
           alt={meal.name}
           decoding="async"
+          width={258}
+          height={160}
           fetchPriority="high"
           className="h-40 w-full object-cover"
         />
