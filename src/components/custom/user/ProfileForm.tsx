@@ -1,4 +1,8 @@
 import { userApi, userQueryKeys } from "@/api/user/user-api";
+import {
+  NumberInput,
+  type NumberInputValue,
+} from "@/components/custom/shared/NumberInput";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -32,9 +36,9 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 const parametersFields = [
-  { name: "age", label: "Вік", suffix: "років" },
-  { name: "weight", label: "Вага", suffix: "кг" },
-  { name: "height", label: "Зріст", suffix: "см" },
+  { name: "age", label: "Вік", suffix: "років", max: 100 },
+  { name: "weight", label: "Вага", suffix: "кг", max: 150 },
+  { name: "height", label: "Зріст", suffix: "см", max: 250 },
 ] as const;
 
 const getDefaultValues = (user: User): ProfileFormInput => ({
@@ -64,7 +68,6 @@ export const ProfileForm = () => {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isDirty },
   } = useForm<ProfileFormInput, undefined, ProfileSchema>({
     resolver: zodResolver(profileSchema),
@@ -100,8 +103,7 @@ export const ProfileForm = () => {
     updateProfile(data);
   };
 
-  const watchedProfile = watch();
-  const isComplete = isProfileComplete(watchedProfile);
+  const isComplete = isProfileComplete(user);
 
   return (
     <section
@@ -153,7 +155,7 @@ export const ProfileForm = () => {
         </Field>
 
         <FieldGroup className="grid grid-cols-2 gap-4">
-          {parametersFields.map(({ name, label, suffix }) => {
+          {parametersFields.map(({ name, label, suffix, max }) => {
             const fieldError = errors[name];
             const inputId = `profile-${name}`;
 
@@ -165,30 +167,15 @@ export const ProfileForm = () => {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
-                    <div className="relative">
-                      <Input
-                        id={inputId}
-                        type="number"
-                        min="0"
-                        step="any"
-                        className="pr-12"
-                        aria-invalid={fieldState.invalid}
-                        value={
-                          field.value === undefined || field.value === null
-                            ? ""
-                            : String(field.value)
-                        }
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          field.onChange(
-                            value === "" ? undefined : Number(value)
-                          );
-                        }}
-                      />
-                      <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-content-muted">
-                        {suffix}
-                      </span>
-                    </div>
+                    <NumberInput
+                      id={inputId}
+                      max={max}
+                      suffix={suffix}
+                      aria-invalid={fieldState.invalid}
+                      value={field.value as NumberInputValue}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
                     {fieldError ? <FieldError errors={[fieldError]} /> : null}
                   </Field>
                 )}
