@@ -55,13 +55,14 @@ export const NumberInput = ({
     <InputGroup className={className} aria-invalid={ariaInvalid}>
       <InputGroupButton
         aria-label="Зменшити"
+        className="hidden md:inline-flex"
         disabled={disabled || numericValue <= 0}
         onClick={() => setValue(numericValue - 1)}
       >
         <Minus aria-hidden="true" />
       </InputGroupButton>
 
-      <div className="relative min-w-0 flex-1">
+      <div className="relative flex-1">
         <InputGroupInput
           {...inputProps}
           type="text"
@@ -102,6 +103,7 @@ export const NumberInput = ({
 
       <InputGroupButton
         aria-label="Збільшити"
+        className="hidden md:inline-flex"
         disabled={disabled || numericValue >= max}
         onClick={() => setValue(numericValue + 1)}
       >

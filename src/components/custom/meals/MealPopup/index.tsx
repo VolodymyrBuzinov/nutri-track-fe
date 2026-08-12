@@ -1,4 +1,8 @@
 import { InfoPopover } from "@/components/custom/shared/InfoPopover";
+import {
+  NumberInput,
+  type NumberInputValue,
+} from "@/components/custom/shared/NumberInput";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,10 +38,10 @@ import { Controller } from "react-hook-form";
 import { useMealPopup } from "./useMealPopup";
 
 const nutritionFields = [
-  { name: "calories", label: "Калорії", suffix: "ккал" },
-  { name: "protein", label: "Білки", suffix: "г" },
-  { name: "fat", label: "Жири", suffix: "г" },
-  { name: "carbohydrates", label: "Вуглеводи", suffix: "г" },
+  { name: "calories", label: "Калорії", suffix: "ккал", max: 4000 },
+  { name: "protein", label: "Білки", suffix: "г", max: 500 },
+  { name: "fat", label: "Жири", suffix: "г", max: 500 },
+  { name: "carbohydrates", label: "Вуглеводи", suffix: "г", max: 500 },
 ] as const;
 
 interface MealPopupProps {
@@ -143,9 +147,7 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                 },
               })}
             />
-            {errors.description && (
-              <FieldError errors={[errors.description]} />
-            )}
+            {errors.description && <FieldError errors={[errors.description]} />}
           </Field>
 
           <FieldGroup className="sm:grid-cols-2">
@@ -232,29 +234,28 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
           <FieldSet className="rounded-xl border border-border p-4">
             <FieldLegend>Поживна цінність</FieldLegend>
             <div className="grid grid-cols-2 gap-4">
-              {nutritionFields.map(({ name, label, suffix }) => {
+              {nutritionFields.map(({ name, label, suffix, max }) => {
                 const fieldError = errors.composition?.[name];
                 const inputId = `meal-${name}`;
 
                 return (
                   <Field key={name} data-invalid={Boolean(fieldError)}>
                     <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
-                    <div className="relative">
-                      <Input
-                        id={inputId}
-                        type="number"
-                        min="0"
-                        step="any"
-                        className="pr-10"
-                        aria-invalid={Boolean(fieldError)}
-                        {...register(`composition.${name}`, {
-                          valueAsNumber: true,
-                        })}
-                      />
-                      <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-content-muted">
-                        {suffix}
-                      </span>
-                    </div>
+                    <Controller
+                      control={control}
+                      name={`composition.${name}`}
+                      render={({ field, fieldState }) => (
+                        <NumberInput
+                          id={inputId}
+                          max={max}
+                          suffix={suffix}
+                          aria-invalid={fieldState.invalid}
+                          value={field.value as NumberInputValue}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
                     {fieldError && <FieldError errors={[fieldError]} />}
                   </Field>
                 );
@@ -281,9 +282,8 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
               </Button>
             </div>
             {fields.map((field, index) => (
-              <div key={field.id} className="grid min-w-0 grid-cols-12 gap-2">
+              <div key={field.id} className="flex gap-2">
                 <Field
-                  className="col-span-6"
                   data-invalid={Boolean(
                     errors.composition?.products?.[index]?.name
                   )}
@@ -309,23 +309,25 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   )}
                 </Field>
                 <Field
-                  className="col-span-3"
                   data-invalid={Boolean(
                     errors.composition?.products?.[index]?.count
                   )}
                 >
-                  <Input
-                    type="number"
-                    min="0"
-                    step="any"
-                    placeholder="К-сть"
-                    aria-label={`Кількість продукту ${index + 1}`}
-                    aria-invalid={Boolean(
-                      errors.composition?.products?.[index]?.count
+                  <Controller
+                    control={control}
+                    name={`composition.products.${index}.count`}
+                    render={({ field, fieldState }) => (
+                      <NumberInput
+                        className="min-w-20 md:min-w-35"
+                        max={2000}
+                        placeholder="К-сть"
+                        aria-label={`Кількість продукту ${index + 1}`}
+                        aria-invalid={fieldState.invalid}
+                        value={field.value as NumberInputValue}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
                     )}
-                    {...register(`composition.products.${index}.count`, {
-                      valueAsNumber: true,
-                    })}
                   />
                   {errors.composition?.products?.[index]?.count && (
                     <FieldError
@@ -334,7 +336,6 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
                   )}
                 </Field>
                 <Field
-                  className="col-span-2"
                   data-invalid={Boolean(
                     errors.composition?.products?.[index]?.unit
                   )}
@@ -401,4 +402,3 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
     </Dialog>
   );
 };
-
