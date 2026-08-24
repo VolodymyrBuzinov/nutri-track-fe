@@ -14,7 +14,7 @@ interface MealCardProps {
 
 export const MealCard = ({ meal, onAdd, onRemove }: MealCardProps) => {
   return (
-    <article className="relative w-65 max-w-xs overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+    <article className="relative w-65 max-w-xs overflow-hidden flex flex-col rounded-xl border border-border bg-white shadow-sm">
       {onRemove ? (
         <Button
           className="absolute top-2 right-2 z-2"
