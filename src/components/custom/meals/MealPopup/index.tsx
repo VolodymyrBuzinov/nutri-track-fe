@@ -214,21 +214,46 @@ export const MealPopup = ({ open, onOpenChange, meal }: MealPopupProps) => {
               {errors.image && <FieldError errors={[errors.image]} />}
             </Field>
 
-            <Field data-invalid={Boolean(errors.slug)}>
-              <FieldLabel htmlFor="meal-slug">Slug</FieldLabel>
-              <Input
-                id="meal-slug"
-                placeholder="nazva-stravi"
-                disabled={isEditing}
-                aria-invalid={Boolean(errors.slug)}
-                {...register("slug", {
-                  onChange: (event) => {
-                    event.target.value = slugFilter(event.target.value);
-                  },
-                })}
+            <div className="flex gap-4">
+              <Controller
+                control={control}
+                name="order"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="meal-order">
+                      Порядковий номер
+                    </FieldLabel>
+                    <NumberInput
+                      id="meal-order"
+                      max={999}
+                      aria-invalid={fieldState.invalid}
+                      value={field.value as NumberInputValue}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
-              {errors.slug && <FieldError errors={[errors.slug]} />}
-            </Field>
+
+              <Field data-invalid={Boolean(errors.slug)}>
+                <FieldLabel htmlFor="meal-slug">Slug</FieldLabel>
+                <Input
+                  id="meal-slug"
+                  placeholder="nazva-stravi"
+                  disabled={isEditing}
+                  aria-invalid={Boolean(errors.slug)}
+                  {...register("slug", {
+                    onChange: (event) => {
+                      event.target.value = slugFilter(event.target.value);
+                    },
+                  })}
+                />
+                {errors.slug && <FieldError errors={[errors.slug]} />}
+              </Field>
+            </div>
           </FieldGroup>
 
           <FieldSet className="rounded-xl border border-border p-4">

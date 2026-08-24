@@ -84,6 +84,8 @@ export interface Meal {
   imageUrl: string;
   slug: string;
   type: "сніданок" | "обід" | "вечеря";
+  /** @min 1 */
+  order: number;
   composition: MealComposition;
 }
 
@@ -97,6 +99,8 @@ export interface CreateMealRequest {
   /** @minLength 1 */
   slug: string;
   type: "сніданок" | "обід" | "вечеря";
+  /** @min 1 */
+  order: number;
   composition: MealComposition;
 }
 
@@ -105,6 +109,8 @@ export interface UpdateMealRequest {
   description?: string;
   imageUrl?: string;
   type?: "сніданок" | "обід" | "вечеря";
+  /** @min 1 */
+  order?: number;
   composition?: {
     calories?: number;
     protein?: number;
@@ -248,7 +254,7 @@ export interface AdminDeleteUserParams {
 }
 
 export interface AdminGetMealsParams {
-  sortBy?: "name" | "type";
+  sortBy?: "name" | "type" | "order";
   sortOrder?: "asc" | "desc";
   search?: string;
 }

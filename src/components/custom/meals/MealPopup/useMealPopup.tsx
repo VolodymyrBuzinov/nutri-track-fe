@@ -20,6 +20,7 @@ const getDefaultValues = (meal?: Meal): MealFormInput => ({
   image: undefined,
   slug: meal?.slug ?? "",
   type: meal?.type ?? "сніданок",
+  order: meal?.order ?? 0,
   composition: {
     calories: meal?.composition.calories ?? 0,
     protein: meal?.composition.protein ?? 0,
@@ -121,6 +122,7 @@ export const useMealPopup = ({
         name: mealData.name,
         description: mealData.description,
         type: mealData.type,
+        order: mealData.order,
         composition: mealData.composition,
       };
 

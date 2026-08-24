@@ -63,6 +63,10 @@ export const mealSchema = z.object({
       "Slug може містити лише малі латинські літери, цифри та дефіси"
     ),
   type: mealTypeValidation,
+  order: z.coerce
+    .number("Вкажіть порядковий номер")
+    .int("Порядковий номер повинен бути цілим числом")
+    .positive("Порядковий номер повинен бути більшим за нуль"),
   composition: z.object({
     calories: nutritionValueValidation,
     protein: nutritionValueValidation,
