@@ -95,7 +95,7 @@ const getMealsTableHead = ({
 };
 
 export const AdminMeals = () => {
-  const [sortBy, setSortBy] = useState<"name" | "type">("name");
+  const [sortBy, setSortBy] = useState<"name" | "type" | "order">("order");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [search, setSearch] = useState("");
   const [isMealPopupOpen, setIsMealPopupOpen] = useState(false);
