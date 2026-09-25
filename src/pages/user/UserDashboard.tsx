@@ -8,6 +8,7 @@ import { WaterBalance } from "@/components/custom/user/WaterBalance";
 import { UserLayout } from "@/layouts/UserLayout";
 import { useQuery } from "@tanstack/react-query";
 import { TODAY } from "@/lib/consts";
+// import { MealsSearch } from "@/components/custom/meals/MealsSearch";
 
 export const UserDashboard = () => {
   const { data: dashboard, isPending: isDashboardPending } = useQuery({
@@ -37,6 +38,7 @@ export const UserDashboard = () => {
           <WaterBalance />
         </div>
       </section>
+      {/* <MealsSearch /> */}
       <MealsSection />
     </UserLayout>
   );

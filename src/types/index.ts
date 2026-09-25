@@ -84,7 +84,7 @@ export interface Meal {
   imageUrl: string;
   slug: string;
   type: "сніданок" | "обід" | "вечеря";
-  /** @min 1 */
+  /** @min 0 */
   order: number;
   composition: MealComposition;
 }
@@ -99,7 +99,7 @@ export interface CreateMealRequest {
   /** @minLength 1 */
   slug: string;
   type: "сніданок" | "обід" | "вечеря";
-  /** @min 1 */
+  /** @min 0 */
   order: number;
   composition: MealComposition;
 }
@@ -109,7 +109,7 @@ export interface UpdateMealRequest {
   description?: string;
   imageUrl?: string;
   type?: "сніданок" | "обід" | "вечеря";
-  /** @min 1 */
+  /** @min 0 */
   order?: number;
   composition?: {
     calories?: number;
@@ -194,6 +194,14 @@ export interface GetMealsParams {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   search?: string;
+}
+
+export interface GetMealsByProductsParams {
+  /**
+   * Product names. A meal is returned only if it contains every listed product.
+   * @minItems 1
+   */
+  products: string[];
 }
 
 export interface GetMealBySlugParams {
