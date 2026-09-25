@@ -18,7 +18,7 @@ const mealTypes: { type: string; label: string }[] = [
 ];
 
 export const MealsSection = () => {
-  const { data: meals = [] } = useQuery({
+  const { data: meals = [], isPending: isMealsPending } = useQuery({
     queryKey: [mealsQueryKeys.getMeals],
     queryFn: () => mealsApi.getMeals({}),
     select: (response) => response.data.data,
@@ -51,7 +51,9 @@ export const MealsSection = () => {
                 {label}
               </h3>
 
-              {mealsByType.length ? (
+              {isMealsPending ? <Loader type="local" /> : null}
+
+              {mealsByType.length && !isMealsPending ? (
                 <Carousel
                   opts={{ align: "start", containScroll: "trimSnaps" }}
                   className="mt-3"
