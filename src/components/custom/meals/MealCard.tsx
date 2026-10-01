@@ -10,11 +10,22 @@ interface MealCardProps {
   meal: Meal;
   onAdd?: (mealId: string) => void;
   onRemove?: (mealId: string) => void;
+  className?: string;
 }
 
-export const MealCard = ({ meal, onAdd, onRemove }: MealCardProps) => {
+export const MealCard = ({
+  meal,
+  onAdd,
+  onRemove,
+  className = "",
+}: MealCardProps) => {
   return (
-    <article className="relative w-65 max-w-xs overflow-hidden flex flex-col rounded-xl border border-border bg-white shadow-sm">
+    <article
+      className={cn(
+        "relative w-65 max-w-xs overflow-hidden flex flex-col rounded-xl border border-border bg-white shadow-sm",
+        className
+      )}
+    >
       {onRemove ? (
         <Button
           className="absolute top-2 right-2 z-2"
