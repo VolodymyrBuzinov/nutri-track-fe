@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../shared/Loader";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const mealTypes: { type: string; label: string }[] = [
   { type: "сніданок", label: "Сніданки" },
@@ -51,7 +52,25 @@ export const MealsSection = () => {
                 {label}
               </h3>
 
-              {isMealsPending ? <Loader type="local" /> : null}
+              {isMealsPending ? (
+                <Carousel
+                  opts={{ align: "start", containScroll: "trimSnaps" }}
+                  className="mt-3"
+                >
+                  <CarouselContent>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <CarouselItem
+                        key={index}
+                        className="relative flex basis-70 justify-center"
+                      >
+                        <Skeleton className="h-full min-h-108 w-65 max-w-xs" />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden md:inline-flex md:-left-12" />
+                  <CarouselNext className="hidden md:inline-flex md:-right-12" />
+                </Carousel>
+              ) : null}
 
               {mealsByType.length && !isMealsPending ? (
                 <Carousel

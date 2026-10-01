@@ -1,19 +1,32 @@
-import type { Dashboard } from "@/types";
 import { ProgressBar } from "@/components/custom/user/ProgressBar";
 import { AlertTriangle, Flame } from "lucide-react";
-
-interface DailyNormsProps extends Omit<Dashboard, "recommendedMeals"> {}
+import { useQuery } from "@tanstack/react-query";
+import { TODAY } from "@/lib/consts";
+import { userApi, userQueryKeys } from "@/api/user/user-api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const sectionStyles =
-  "rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6";
+  "rounded-xl border border-border bg-white p-4 shadow-sm sm:p-6 min-h-50";
 const sectionAriaLabel = "daily-norms-title";
 
-export const DailyNorms = ({
-  progress,
-  status,
-  missingProfileFields,
-}: DailyNormsProps) => {
-  const isReady = status === "ready";
+export const DailyNorms = () => {
+  const { data: dashboard, isPending: isDashboardPending } = useQuery({
+    queryKey: [userQueryKeys.getDashboardData, TODAY],
+    queryFn: () => userApi.getDashboardData({ date: TODAY }),
+    select: (res) => res?.data?.data,
+  });
+  const isReady = dashboard?.status === "ready";
+  const progress = dashboard?.progress;
+  const missingProfileFields = dashboard?.missingProfileFields;
+
+  if (isDashboardPending)
+    return (
+      <section aria-labelledby={sectionAriaLabel} className={sectionStyles}>
+        <Skeleton className="h-6 w-full max-w-50 mb-10" />
+        <Skeleton className="h-6 w-full mb-5" />
+        <Skeleton className="h-6 w-full" />
+      </section>
+    );
 
   if (!isReady && missingProfileFields?.length)
     return (

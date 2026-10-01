@@ -1,33 +1,15 @@
-import { userApi, userQueryKeys } from "@/api/user/user-api";
-import { Loader } from "@/components/custom/shared/Loader";
 import { MealsSection } from "@/components/custom/meals/MealsSection";
 import { DailyNorms } from "@/components/custom/user/DailyNorms";
 import { MealPlan } from "@/components/custom/user/MealPlan";
 import { Recommendations } from "@/components/custom/user/Recommendations";
 import { WaterBalance } from "@/components/custom/user/WaterBalance";
 import { UserLayout } from "@/layouts/UserLayout";
-import { useQuery } from "@tanstack/react-query";
-import { TODAY } from "@/lib/consts";
 import { MealsSearch } from "@/components/custom/meals/MealsSearch";
 
 export const UserDashboard = () => {
-  const { data: dashboard, isPending: isDashboardPending } = useQuery({
-    queryKey: [userQueryKeys.getDashboardData, TODAY],
-    queryFn: () => userApi.getDashboardData({ date: TODAY }),
-    select: (res) => res?.data?.data,
-  });
-
   return (
     <UserLayout mainClassName="space-y-6">
-      {isDashboardPending ? (
-        <Loader type="global" />
-      ) : dashboard ? (
-        <DailyNorms
-          progress={dashboard.progress}
-          status={dashboard.status}
-          missingProfileFields={dashboard.missingProfileFields}
-        />
-      ) : null}
+      <DailyNorms />
       <MealPlan />
       <section
         aria-labelledby="recommendations-title"
